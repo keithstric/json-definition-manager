@@ -1,7 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {RouterStateService} from '@core/services/router-state/router-state.service';
 import {LayoutService} from '@layout/services/layout/layout.service';
-import {Store} from '@ngrx/store';
 import {Subscription} from 'rxjs';
 import {delay} from 'rxjs/operators';
 import {SiteFooterComponent} from '@layout/components/site-footer/site-footer.component';
@@ -26,8 +24,6 @@ export class AppComponent implements OnInit, OnDestroy {
 		private _loading: LoadingService,
 		private _cdr: ChangeDetectorRef,
 		private _layout: LayoutService,
-		private store: Store<{loading: boolean}>,
-		private _routerState: RouterStateService
 	) {
 	}
 
@@ -79,10 +75,10 @@ export class AppComponent implements OnInit, OnDestroy {
 	 * toggle visibility of the spinner
 	 */
 	listenToLoading() {
-		this.store.select(store => store.loading)
+		/*this.store.select(store => store.loading)
 			.pipe(delay(0))
 			.subscribe((loading) => {
 				this.loading = loading;
-			});
+			});*/
 	}
 }
