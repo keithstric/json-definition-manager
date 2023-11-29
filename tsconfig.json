@@ -25,7 +25,8 @@
 			"@testing/*": ["src/app/testing/*"]
 		}
 	},
-  "angularCompilerOptions": {
+	"exclude": ["node_modules"],
+	"angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
   }

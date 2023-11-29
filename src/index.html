@@ -13,7 +13,28 @@
   <meta name="theme-color" content="#1976d2">
 </head>
 <body>
+<!--	<div id="jsoneditor"></div>-->
   <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
+	<!--<script type="module">
+		import {JSONEditor} from '~vanilla-jsoneditor';
+		let content = {
+			text: undefined,
+			json: {
+				"greeting": "Hello World"
+			}
+		};
+		const editor = new JSONEditor({
+			target: document.getElementById('jsoneditor'),
+			props: {
+				content,
+				onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+					// content is an object { json: JSONValue } | { text: string }
+					console.log('onChange', { updatedContent, previousContent, contentErrors, patchResult })
+					content = updatedContent
+				}
+			}
+		});
+	</script>-->
 </body>
 </html>
