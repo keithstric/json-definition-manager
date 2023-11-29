@@ -1,0 +1,44 @@
+@import 'src/scss/mixins';
+
+:host {
+
+	.card-container {
+		padding: 15px;
+
+		&.with-border {
+			border: 1px solid #afafaf;
+			background-color: white;
+			@include border-radius(10px);
+		}
+
+		&.raised {
+			@include elevation(3);
+		}
+
+		&::ng-deep {
+			*[header] {
+				padding: 0 0 10px 0;
+			}
+
+			*[content] {
+				padding: 10px 0;
+			}
+
+			*[actions] {
+				display: flex;
+				justify-content: flex-end;
+				padding: 10px 0;
+
+				*:not(:first-child) {
+					margin-left: 10px;
+				}
+			}
+
+			*[footer] {
+				padding: 10px 0 0 0;
+			}
+		}
+	}
+}
+
+

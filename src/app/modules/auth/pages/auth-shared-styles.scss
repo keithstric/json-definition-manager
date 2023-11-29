@@ -1,0 +1,36 @@
+/**
+ * Using shared styles since all of the auth forms are basically laid out the spame and should have
+ * the same styles.
+ */
+
+@import 'src/scss/variables';
+
+.page-container {
+
+	app-card {
+		width: 400px;
+
+		&::ng-deep {
+
+			.header {
+				text-align: center;
+
+				h1, h2, h3, h4, h5, h6 {
+					margin: 0 0 10px 0;
+				}
+
+				.card-subtitle {
+					opacity: 0.7;
+					color: $warn;
+				}
+			}
+
+			.footer {
+
+				a:first-child {
+					margin-right: 10px;
+				}
+			}
+		}
+	}
+}

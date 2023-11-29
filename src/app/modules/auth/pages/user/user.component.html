@@ -1,0 +1,31 @@
+<div class="page-container flex flex-content-center">
+	<app-card>
+		<div class="header flex-column" header>
+			<h2 class="title">{{projectName}}</h2>
+			<h3 class="card-subtitle">{{errorMsg}}</h3>
+		</div>
+		<div class="content" content>
+			<form #loginForm class="loginForm flex-column" [formGroup]="userData">
+				<div class="form-field flex-column">
+					<label class="label" for="firstName">First Name</label>
+					<input id="firstName" class="input" placeholder="First Name" type="email" [formControl]="first_name" name="first_name">
+				</div>
+				<div class="form-field flex-column">
+					<label class="label" for="lastName">Last Name</label>
+					<input id="lastName" class="input" placeholder="Last Name" type="email" [formControl]="last_name" name="last_name">
+				</div>
+				<div class="form-field flex-column">
+					<label class="label" for="emailAddress">Email Address</label>
+					<input id="emailAddress" class="input" placeholder="youremail@knowhere.com" type="email" [formControl]="email" name="email">
+				</div>
+			</form>
+		</div>
+		<div class="actions flex-row flex-content-end" actions>
+			<button (click)="reset()">Reset</button>
+			<button (click)="update()" [disabled]="updateIsDisabled">Update</button>
+		</div>
+		<div class="footer flex-row flex-content-center" footer>
+			<a routerLink="/auth/changepw" title="Reset Password">Reset Password</a>
+		</div>
+	</app-card>
+</div>

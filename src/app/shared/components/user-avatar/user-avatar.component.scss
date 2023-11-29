@@ -1,0 +1,93 @@
+@import '../../../../scss/variables';
+@import '../../../../scss/mixins';
+
+:host {
+  padding: 0;
+
+  &.small {
+
+		.avatar-container {
+			height: 32px;
+			width: 32px;
+
+			.material-icons {
+				font-size: 24px;
+			}
+
+			.initials {
+				font-size: 18px;
+			}
+		}
+  }
+
+  &.medium {
+
+		.avatar-container {
+			height: 48px;
+			width: 48px;
+
+			.material-icons {
+				font-size: 48px;
+			}
+
+			.initials {
+				font-size: 24px;
+			}
+		}
+  }
+
+  &.large {
+
+		.avatar-container {
+			height: 64px;
+			width: 64px;
+
+			.material-icons {
+				font-size: 64px;
+			}
+
+			.initials {
+				font-size: 32px;
+			}
+		}
+  }
+
+	&.huge {
+
+		.avatar-container {
+			height: 120px;
+			width: 120px;
+
+			.material-icons {
+				font-size: 120px;
+			}
+
+			.initials {
+				font-size: 60px;
+			}
+		}
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.avatar-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+
+  .avatar {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    @include border-radius(50%);
+  }
+
+	.initials {
+		padding: 7px;
+	}
+}

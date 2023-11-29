@@ -1,0 +1,6 @@
+<div class="card-container flex-column" [class.with-border]="withBorder" [class.raised]="raised">
+	<ng-content select="[header]"></ng-content>
+	<ng-content select="[content]"></ng-content>
+	<ng-content select="[actions]"></ng-content>
+	<ng-content select="[footer]"></ng-content>
+</div>
