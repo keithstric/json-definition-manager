@@ -1,5 +1,5 @@
 import {Component, ComponentFactoryResolver, Injector, OnInit, TemplateRef, Type, ViewChild} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {ViewRefDirective} from '@shared/directives/view-ref/view-ref.directive';
 
 @Component({
@@ -25,7 +25,7 @@ export class ConfirmModalComponent implements OnInit {
 	confirmHandler: any;
 	cancelHandler: any;
 	data: any;
-	formGroup: FormGroup;
+	formGroup: UntypedFormGroup;
 	componentInjector: Injector;
 	closeOnConfirm: boolean = true;
 	closeOnCancel: boolean = true;
