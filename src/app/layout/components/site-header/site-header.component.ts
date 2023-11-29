@@ -1,9 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
-import {iUserState} from '@core/root-store/models/app-state.model';
-import {LogOutUserAction} from '@core/root-store/user/user.action';
-import {Store} from '@ngrx/store';
-import {User} from '@core/models/user.model';
 import {Subscription} from 'rxjs';
 import {LocalStorageService} from '@core/services/local-storage/local-storage.service';
 import {PROJECT_NAME} from 'src/environments/environment';
@@ -36,11 +32,9 @@ export class SiteHeaderComponent implements OnInit, OnDestroy {
 	constructor(
 		private _storage: LocalStorageService,
 		private _router: Router,
-		private store: Store<{user: iUserState}>
 	) {	}
 
 	ngOnInit(): void {
-		this.listenToAuth();
 		this.listenToRoute();
 	}
 
@@ -65,22 +59,5 @@ export class SiteHeaderComponent implements OnInit, OnDestroy {
 				}
 			}
 		}));
-	}
-
-	/**
-	 * Setup a listener for a user
-	 */
-	private listenToAuth() {
-		this.store.select(state => state.user.data)
-			.subscribe((user: User) => {
-				this.user = user;
-			});
-	}
-
-	/**
-	 * Logout the current user
-	 */
-	logout() {
-		this.store.dispatch(new LogOutUserAction());
 	}
 }

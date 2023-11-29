@@ -1,9 +1,7 @@
 import {LogLevel, LogLevelNameMap} from '@core/services/logger/logger.interface';
-import {AppState} from '@core/root-store/models/app-state.model';
 import {AbstractTransport} from '@core/services/logger/abstract-transport';
 import {LogEntry} from '@core/services/logger/log-entry';
 import {ServiceLocator} from '@core/services/service-locator';
-import {Store} from '@ngrx/store';
 
 /**
  * This is a console logger transport. Will display all received log entries in the console
@@ -29,23 +27,9 @@ export class ConsoleTransport extends AbstractTransport {
 		takeOverConsoleLog: boolean = false
 	) {
 		super(level);
-		this._listenToStore();
 		if (takeOverConsoleLog) {
 			this.takeOverConsoleLog();
 		}
-	}
-
-	private _listenToStore() {
-		ServiceLocator.observableInjector
-			.subscribe((injector) => {
-				if (injector && !this.storeListener) {
-					const store = injector.get(Store);
-					this.storeListener = store.select((appState: AppState) => appState)
-						.subscribe((appState) => {
-							this.appState = {...appState};
-						});
-				}
-			});
 	}
 
 	/**

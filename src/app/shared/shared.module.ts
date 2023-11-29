@@ -16,7 +16,6 @@ import {FormHelperService} from '@shared/services/form-helper/form-helper.servic
 import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component';
 import { SnackBarComponent } from './components/snack-bar/snack-bar.component';
 import { ViewRefDirective } from 'src/app/shared/directives/view-ref/view-ref.directive';
-import { ConnectStoreFormDirective } from '@shared/directives/connect-store-form/connect-store-form.directive';
 import { CheckboxStringValueDirective } from './directives/checkbox-string-value/checkbox-string-value.directive';
 
 const sharedComponents = [
@@ -26,7 +25,6 @@ const sharedComponents = [
 ];
 
 const sharedDirectives = [
-	ConnectStoreFormDirective,
 	FileDnDDirective,
 	ViewRefDirective
 ];
