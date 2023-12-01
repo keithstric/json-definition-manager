@@ -1,6 +1,7 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpService} from '@core/services/http/http.service';
 import {LayoutService} from '@layout/services/layout/layout.service';
+import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
 
 @Component({
 	selector: 'app-home',
@@ -9,20 +10,11 @@ import {LayoutService} from '@layout/services/layout/layout.service';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 	origHeaderComponent: any;
-	editor: any;
-	editorContent: any = {
-		text: undefined,
-		json: {
-			"greeting": "Hello World"
-		}
-	};
 
 	constructor(
 		private _http: HttpService,
 		private _layout: LayoutService
-	) {}
-
-	@ViewChild("jsonEditor") el: ElementRef<HTMLElement>;
+	) { }
 
 	ngOnInit(): void {
 		this.origHeaderComponent = this._layout.headerSource.value;

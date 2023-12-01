@@ -1,8 +1,9 @@
+@use 'sass:math';
 @import 'variables';
 
 @mixin font-size($size) {
 	font-size: $size;
-	font-size: ($size / 16px) * 1rem; // convert to rem if browser supports it
+	font-size: math.div($size, 16px) * 1rem; // convert to rem if browser supports it
 }
 
 @mixin box-shadow( $hOffset: 10px, $vOffset: 10px, $blurPx: 0, $spreadPx: 0, $colorVal: rgba(0,0,0,0.5) ) {

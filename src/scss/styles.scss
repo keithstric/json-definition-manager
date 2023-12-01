@@ -1,24 +1,84 @@
-/* You can add global styles to this file, and also import other style files */
+/* Any UI framework imports go here */
+
+/** import local and icon fonts used in the app */
+@import 'fonts/import-fonts';
+
+/**
+ * import font awesome
+ */
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/brands';
+
+/**
+ * The application's variables and theme
+ */
 @import 'variables';
 
-/* Any UI framework imports go here */
+/**
+ * Bootstrap implementation, do not need to define in index.html OR angular.json
+ * MUST be defined AFTER variables so those variables are used instead of bootstrap's.
+ *
+ * Sizes defined in rem, em and % or font-sizes in px (use rem here) for bootstrap will break
+ * the compilation of scss
+ */
+
+// @import 'bootstrap/scss/bootstrap'; // Imports ALL of bootstrap, comment out all bootstrap imports below if you use this to prevent duplicate imports
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/button-group';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/popover';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/navbar';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/tooltip';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/list-group';
 
 @import 'mixins';
 
-/* misc/app-global should be last in order to override any other styles */
+/**
+ * Bootstrap, ngx-bootstrap overrides and misc styles.
+ *
+ * misc/app-global MUST be last here in order to override any other styles
+ * as this is our global styles for the app
+ */
+@import 'misc/bootstrap-overrides';
+@import 'misc/flexbox';
+@import "jsoneditor/dist/jsoneditor.min.css";
 @import 'misc/flexbox';
 @import 'misc/app-global';
 
+/**
+ * font-family, background-color, color, etc. all controlled via variables in theme.scss. No need
+ * to define them here
+ */
 body {
-	font-family: Roboto, "Helvetica Neue", sans-serif;
-	font-size: 0.75rem;
 	overflow: hidden;
-	margin: 0;
-	height: 100vh;
+	// This feels dirty, fixes issue with top of body moving up when manipulating questions
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }
-
 /**
  * For the sake of cleanliness all global styles are placed elsewhere (i.e. in the misc folder)
  */
 
 
+
+/* Importing Bootstrap SCSS file. */
+//@import "bootstrap/scss/bootstrap";
+
+/* Importing Datepicker SCSS file. */
+//@import "ngx-bootstrap/datepicker/bs-datepicker";

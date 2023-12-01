@@ -14,7 +14,7 @@ export enum FormManagerEvents {
 	REPLACE_ME_WITH_A_MEANINGFUL_EVENT_NAME
 }
 /**
- * An event object that contains the event name and any required data that needs to be
+ * An event object that contains the event name and any required initialSchema that needs to be
  * passed to the event
  */
 export type FormManagerEvent = {eventName: FormManagerEvents, data: any};

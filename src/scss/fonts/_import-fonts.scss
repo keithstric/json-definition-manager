@@ -1,0 +1,81 @@
+/* src/scss/fonts/_import-fonts.scss */
+$fontPath: '../../assets/fonts';
+@font-face {
+	font-family: "Graphik";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("#{$fontPath}/graphik/Graphik-Regular-Web.eot?wan380");
+	src: local("Graphik Regular"), local("Graphik-Regular"),
+		url("#{$fontPath}/graphik/Graphik-Regular-Web.eot?wan380#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/graphik/Graphik-Regular-Web.ttf?wan380") format("truetype"),
+		url("#{$fontPath}/graphik/Graphik-Regular-Web.woff?wan380") format("woff"),
+		url("#{$fontPath}/graphik/Graphik-Regular-Web.woff2?wan380") format("woff2");
+}
+
+@font-face {
+	font-family: "Graphik";
+	font-style: normal;
+	font-weight: bold;
+	font-display: swap;
+	src: url("#{$fontPath}/graphik/Graphik-Bold-Web.eot");
+	src: local("Graphik Bold"), local("Graphik-Bold"),
+		url("#{$fontPath}/graphik/Graphik-Bold-Web.eot?#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/graphik/Graphik-Bold-Web.woff") format("woff"),
+		url("#{$fontPath}/graphik/Graphik-Bold-Web.ttf") format("truetype"),
+		url("#{$fontPath}/graphik/Graphik-Bold-Web.svg#graphik_webbold") format("svg");
+}
+
+@font-face {
+	font-family: "Lato";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("#{$fontPath}/lato/Lato-Regular.eot");
+	src: local("Lato Regular"), local("Lato-Regular"),
+		url("#{$fontPath}/lato/Lato-Regular.eot?#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/lato/Lato-Regular.woff2") format("woff2"),
+		url("#{$fontPath}/lato/Lato-Regular.woff") format("woff"),
+		url("#{$fontPath}/lato/Lato-Regular.ttf") format("truetype"),
+		url("#{$fontPath}/lato/Lato-Regular.svg#lato") format("svg");
+}
+
+@font-face {
+	font-family: "Lato";
+	font-style: normal;
+	font-weight: bold;
+	font-display: swap;
+	src: url("#{$fontPath}/lato/Lato-Bold.eot");
+	src: local("Lato Bold"), local("Lato-Bold"),
+		url("#{$fontPath}/lato/Lato-Bold.eot?#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/lato/Lato-Bold.woff2") format("woff2"),
+		url("#{$fontPath}/lato/Lato-Bold.woff") format("woff"),
+		url("#{$fontPath}/lato/Lato-Bold.ttf") format("truetype"),
+		url("#{$fontPath}/lato/Lato-Bold.svg#lato") format("svg");
+}
+
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("#{$fontPath}/roboto/Roboto-Regular.eot?");
+	src: local("Roboto Regular"), local("Roboto-Regular"),
+		url("#{$fontPath}/roboto/Roboto-Regular.eot?#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/roboto/Roboto-Regular.woff2") format("woff2"),
+		url("#{$fontPath}/roboto/Roboto-Regular.woff") format("woff"),
+		url("#{$fontPath}/roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: bold;
+	font-display: swap;
+	src: url("#{$fontPath}/roboto/Roboto-Bold.eot");
+	src: local("Roboto Bold"), local("Roboto-Bold"),
+		url("#{$fontPath}/roboto/Roboto-Bold.eot?#iefix") format("embedded-opentype"),
+		url("#{$fontPath}/roboto/Roboto-Bold.woff2") format("woff2"),
+		url("#{$fontPath}/roboto/Roboto-Bold.woff") format("woff"),
+		url("#{$fontPath}/roboto/Roboto-Bold.ttf") format("truetype");
+}

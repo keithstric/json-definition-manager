@@ -8,6 +8,7 @@ import {PageNotFoundComponent} from '@layout/components/page-not-found/page-not-
  */
 export const appRoutes: Routes = [
 	{path: '', loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)},
+	{path: 'schema', loadChildren: () => import('./modules/schema/schema.module').then(m => m.SchemaModule)},
 	{path: '**', component: PageNotFoundComponent}
 ];
 

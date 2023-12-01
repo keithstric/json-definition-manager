@@ -81,7 +81,7 @@ export class MockStorybookPageBreadcrumbHeaderComponent extends PageBreadcrumbHe
 	</ng-template>`
 })
 export class MockStorybookOpenDialogComponent implements OnInit {
-	@Input() data: ConfirmDialogData = {};
+	@Input() initialSchema: ConfirmDialogData = {};
 	@ViewChild('exampleTemplate', {static: true}) exampleTemplate: TemplateRef<any>;
 
 	constructor(
@@ -89,10 +89,10 @@ export class MockStorybookOpenDialogComponent implements OnInit {
 	) {}
 
 	ngOnInit() {
-		if (this.data.messageTemplate) {
-			this.data.messageTemplate = this.exampleTemplate;
+		if (this.initialSchema.messageTemplate) {
+			this.initialSchema.messageTemplate = this.exampleTemplate;
 		}
-		this.dialog.open(ConfirmDialogComponent, {data: this.data});
+		this.dialog.open(ConfirmDialogComponent, {initialSchema: this.initialSchema});
 	}
 }*/
 

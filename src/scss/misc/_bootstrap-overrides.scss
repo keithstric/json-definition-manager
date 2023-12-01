@@ -1,0 +1,119 @@
+/**
+ * src/scss/misc/_bootstrap-overrides.scss
+ * Theme overrides from UX team
+ */
+h1 {
+	font-size: 28px;
+	line-height: 40px;
+}
+
+h2 {
+	font-size: 22px;
+	line-height: 32px;
+}
+
+h3 {
+	font-size: 18px;
+	line-height: 24px;
+}
+
+h4 {
+	font-size: 16px;
+	line-height: 24px;
+}
+
+h5 {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+/*
+ * Color style classes
+ */
+.primary {
+	color: $primary;
+}
+
+.warn {
+	color: $warn;
+}
+
+.info {
+	color: $info;
+}
+
+.success {
+	color: $success;
+}
+
+.danger {
+	color: $danger;
+}
+
+.error {
+	color: $error;
+}
+
+/**
+ * For bootstrap containers, ensure we take into account the width of the
+ * sidebar
+ */
+.container {
+	max-width: calc(100vw - #{$sidebar-width});
+}
+
+a {
+
+	&:hover {
+		cursor: pointer;
+	}
+}
+
+/**
+ * navbar style here so that injected header navbars will all be
+ * styled the same without having to include this clip in every
+ * header component
+ */
+.site-header .navbar {
+	//background-color: white;
+	border-bottom: 1px solid $light-grey;
+	height: $header-height;
+
+	.navbar-brand {
+		font-size: 1rem;
+		font-weight: 500;
+		color: $dark-primary;
+	}
+
+	.container-fluid {
+		width: 100%;
+		padding: 1rem;
+	}
+}
+
+/**
+ * Override the ngx-bootstrap dropdown-menu styles. If styling a menu-item
+ * ensure you give it it's own class name so that it can be controlled
+ * individually
+ */
+.dropdown-menu {
+	@include elevation(2);
+
+	.campaign-menu-item {
+		@include font-size(14px);
+
+		&:hover {
+			background-color: $primary;
+			color: white !important;
+		}
+	}
+}
+
+/**
+ * Override the modal z-index to lower it just a bit so that drop downs within a modal will
+ * not be covered up by the modal. A drop down has a z-index of 1040.
+ */
+.modal, .modal-backdrop {
+	z-index: 1039;
+}
+

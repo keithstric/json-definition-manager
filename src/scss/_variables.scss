@@ -1,15 +1,48 @@
+/**
+ * src/scss/_variables.scss
+ * This file defines the variables which can be used throughout the application.
+ * No styles should be defined here, only variable values
+ */
+
 @import 'theme';
 
-/* Variables for the theme colors */
-$primary: $app-primary;
-$accent: $app-accent;
+/* State background colors */
+$warning: $app-warn;
 $warn: $app-warn;
 $warn-color: $app-warn-color;
-$info: $app-info;
+$info: $app-info-color;
 $info-color: $app-info-color;
-$success: $app-success;
+$success: $app-success-color;
 $success-color: $app-success-color;
-$danger: $app-danger;
+$danger: $app-danger-color;
 $danger-color: $app-danger-color;
 $error: $app-error;
 $error-color: $app-error-color;
+$tertiary: $app-tertiary;
+$primary: $app-primary;
+$light-primary: $app-light-primary;
+$lighter-primary: $app-lighter-primary;
+$dark-primary: $app-dark-primary;
+$secondary: $app-secondary;
+$accent: $color-yellow;
+
+/* other colors */
+$red: $color-red;
+$turquoise: $color-turquoise;
+$yellow: $color-yellow;
+$midnight: $color-midnight;
+$dark-grey: $color-dark-grey;
+$darker-grey: $color-darker-grey;
+$light-grey: $color-light-grey;
+$little-lighter-grey: $color-little-lighter-grey;
+$lighter-grey: $color-lighter-grey;
+$lightest-grey: $color-light;
+$medium-grey: $color-medium-grey;
+$red-rose: $color-rose-red;
+
+/* App sidebar, header, footer sizes */
+$sidebar-width: 48px;
+$header-height: 64px;
+$footer-height: 64px;
+
+@import 'misc/bootstrap-variables';

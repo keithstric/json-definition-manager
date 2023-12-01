@@ -1,13 +1,40 @@
-/* default colors */
-$app-primary: #3F51B5;
-$app-accent: #03A9F4;
+/**
+ * src/scss/theme.scss
+ * This file defines the theme colors. No styles should be defined here
+ * only variable values and bootstrap overrides
+ */
+
+// default colors
+$color-light: #f7f5f1;
+$color-dark: #2a2a2a;
+$color-red: #e74536;
+$color-turquoise: #6ba5b4;
+$color-yellow: #ffb511;
+$color-midnight: #878ca0;
+$color-darker-grey: #393939;
+$color-dark-grey: #6c6c6c;
+$color-medium-grey: #c5c5c5;
+$color-light-grey: #d7d7d7;
+$color-little-lighter-grey: #f7f5f0;
+$color-lighter-grey: #f7f7f7;
+$color-rose-red: #f6e5e4;
+
+// theme colors
+$app-primary: #2175d9;
+$app-light-primary: #90baec;
+$app-lighter-primary: #E8F1FB;
+$app-dark-primary: #0f1941;
+$app-secondary: #0f1941;
+$app-tertiary: #6ba5b4;
+
+// state colors
 $app-error: #de1414;
-$app-error-color: white;
-$app-info: #d1ecf1;
-$app-info-color: #0c5460;
-$app-success: #d4edda;
-$app-success-color: #155724;
-$app-danger: #f8d7da;
-$app-danger-color: #721c24;
-$app-warn: #fff3cd;
-$app-warn-color: #856404;
+$app-error-color: $color-light;
+$app-info: #6ba5b4;
+$app-info-color: $color-dark;
+$app-success: #3ba817;
+$app-success-color: $color-light;
+$app-danger: #f24747;
+$app-danger-color: $color-light;
+$app-warn: #ffb609;
+$app-warn-color: $color-dark;

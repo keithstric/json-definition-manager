@@ -59,7 +59,7 @@ export interface ConfirmModalConfig {
 	 */
 	confirmButtonLabel?: string;
 	/**
-	 * any data item that may need to be returned
+	 * any initialSchema item that may need to be returned
 	 */
 	data?: any;
 	/**

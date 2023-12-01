@@ -1,0 +1,96 @@
+/**
+ * src/scss/misc/_bootstrap-variables.scss
+ * Bootstrap theme variable over-rides
+ * Ensure all sizes are in "px" with exception of font-size which should be rem
+ * DO NOT USE rem, em or % for sizes, with exception of font-size. It will break the build.
+ **/
+@import '../theme';
+/**
+ * The following is required for Bootstrap v5.1.0. This may change in v5.2.0
+ * See https://github.com/twbs/bootstrap/issues/34734
+ */
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import 'bootstrap/scss/variables-dark';
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/utilities";
+
+/* App base bootstrap colors */
+$primary: $app-primary;
+$secondary: $app-secondary;
+$success: $app-success;
+$info: $app-info;
+$warning: $app-warn;
+$danger: $app-danger;
+$light: $color-light;
+$dark: $app-secondary;
+
+/* custom color map to be merged into the bootstrap $theme-colors variable */
+$custom-theme-colors: (
+	'light-primary': $app-light-primary,
+	'lighter-primary': $app-lighter-primary,
+	'dark-primary': $app-dark-primary,
+	'error': $app-error,
+	'tertiary': $app-tertiary
+);
+
+/* merge our custom colors into the bootstrap $theme-colors variable */
+$theme-colors: map-merge($theme-colors, $custom-theme-colors);
+/* set the utilities colors (i.e. btn-tertiary class) to our $theme-colors-rgb variable */
+$utilities-colors: map-merge($utilities-colors, $theme-colors);
+/* build text colors (i.e. text-tertiary class) classes from our $utilities-colors */
+$utilities-text-colors: map-loop($utilities-colors, rgba-css-var, "$key", "text");
+/* build the bg colors (i.e. bg-tertiary class) classes from our $utilities-colors */
+$utilities-bg-colors: map-loop($utilities-colors, rgba-css-var, "$key", "bg");
+
+/*
+ * produce rgb colors for our customized $theme-colors
+ * this must be AFTER the theme and utility color generation
+ */
+$theme-colors-rgb: map-loop($theme-colors, to-rgb, '$value');
+
+/***** END Theme and Utility color generation *****/
+
+/**
+ * The font-size uses rem (px will break the build). It assumes a browser font size of 16px, so
+ * all font sizes will be based on what the browser font size is defined as and should scale
+ * properly if the browser font size is different than 16px. This also doesn't break a user's
+ * preferences which is important for accessibility
+ * ref:
+ *   0.875rem = 14px;
+ *   1rem = 16px;
+ *   1.5rem = 24px;
+ */
+$body-bg: $lighter-grey;
+$body-color: $app-secondary;
+$font-family-base: "Graphik", sans-serif;
+$font-size-base: 1rem;
+$font-size-sm: 0.875rem;
+$font-size-lg: 1.5rem;
+$grid-gutter-width: 24px;
+$link-color: $app-primary;
+
+/* Define custom-switch info here so that position is mostly calculated for us */
+$custom-control-indicator-size: 1.5rem;
+$custom-control-indicator-border-color: white;
+$custom-switch-width: 2.25rem;
+$custom-control-gutter: .75rem;
+
+/* custom checkbox variables */
+$form-check-input-border-radius: 2px;
+$form-check-input-focus-box-shadow: none;
+$form-check-input-width: 1.25em;
+
+/* custom form input variables */
+$input-bg: white;
+
+/* custom button variables */
+$btn-active-box-shadow: none;
+
+/* custom modal variables */
+$modal-backdrop-bg: $secondary;
+
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+@import 'bootstrap/scss/utilities/api';
