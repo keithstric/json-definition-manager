@@ -8,7 +8,6 @@ import {
 	FormsModule,
 	ReactiveFormsModule
 } from '@angular/forms';
-import {AgGridComponent} from '@shared/components/ag-grid/ag-grid.component';
 import {SnackBarRef} from '@shared/components/snack-bar/snack-bar.ref';
 import {UserAvatarComponent} from '@shared/components/user-avatar/user-avatar.component';
 import {FileDnDDirective} from '@shared/directives/file-dn-d/file-dn-d.directive';
@@ -21,7 +20,6 @@ import { ViewRefDirective } from 'src/app/shared/directives/view-ref/view-ref.di
 import { CheckboxStringValueDirective } from './directives/checkbox-string-value/checkbox-string-value.directive';
 
 const sharedComponents = [
-	AgGridComponent,
 	ConfirmModalComponent,
 	SnackBarComponent,
 	UserAvatarComponent,

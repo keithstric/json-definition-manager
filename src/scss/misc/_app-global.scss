@@ -1,3 +1,10 @@
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
+
+.ag-theme-quartz, .ag-theme-quartz-dark {
+	--ag-border-radius: 0;
+}
+
 a {
 	color: $primary;
 	text-decoration: none;
