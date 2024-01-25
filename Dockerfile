@@ -32,11 +32,11 @@ FROM nginx:stable-alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # From node 'builder' copy website to default nginx public folder
-COPY --from=builder /app/dist/angular-boilerplate /usr/share/nginx/html
+COPY --from=builder /app/dist/json-definition-manager /usr/share/nginx/html
 COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 
 # expose port 80
-EXPOSE 8080
+EXPOSE 80
 
 # run the nginx server
 CMD ["nginx", "-g", "daemon off;"]
