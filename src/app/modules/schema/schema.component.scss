@@ -3,35 +3,17 @@
 .schema-container {
 	padding-top: 1rem;
 
-	.card {
-		min-height: 50px;
-		border-radius: 5px;
-		margin-bottom: 1rem;
-
-		.collapse-header {
-			font-size: 1rem;
-			height: 50px;
-
-			&:hover {
-				cursor: pointer;
-			}
+	.schema-editor {
+		box-sizing: border-box;
+		app-schema-editor {
+			flex-grow: 1;
 		}
-		.card-body {
-			padding: 0;
+	}
 
-			.schema-editor {
-				app-schema-editor {
-					flex-grow: 1;
-				}
-			}
-			.actions {
-				margin: 1rem 0;
-
-				.btn {
-					margin-right: 0.25rem;
-					border: 1px solid $primary;
-				}
-			}
+	collapse-actions {
+		.btn {
+			margin-right: 0.25rem;
+			border: 1px solid $primary;
 		}
 	}
 }

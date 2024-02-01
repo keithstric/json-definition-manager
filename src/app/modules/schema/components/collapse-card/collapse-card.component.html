@@ -1,0 +1,14 @@
+<div class="card">
+	<div
+		class="collapse-header card-header flex-row align-items-center justify-content-between"
+		(click)="isCollapsed = !isCollapsed">
+		{{title}}
+		<i class="fa-solid" [ngClass]="{'fa-chevron-down': isCollapsed, 'fa-chevron-up': !isCollapsed}"></i>
+	</div>
+	<div class="card-body" [collapse]="isCollapsed">
+		<ng-content select="[content]"></ng-content>
+		<div class="actions flex-row justify-content-end">
+			<ng-content select="[footer]"></ng-content>
+		</div>
+	</div>
+</div>

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import userJson from 'src/app/testing/mock-data/user.json';
 
 /**
- * This service is for providing mock initialSchema for unit tests
+ * This service is for providing mock sourceSchema for unit tests
  */
 
 @Injectable({

@@ -3,6 +3,7 @@
 :host ::ng-deep json-editor > div,
 :host ::ng-deep json-editor jsoneditor-outer {
 	height: 600px;
+	margin-bottom: 30px;
 }
 json-editor {
 	flex-grow: 1;

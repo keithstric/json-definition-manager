@@ -1,9 +1,8 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {
 	DefinitionDataTypes,
 	DefinitionItem,
-	SchemaDefinitionDocument
 } from '@modules/schema/interfaces/schema.interface';
 import {Subscription} from 'rxjs';
 import schemas from '../schemas.json';
@@ -14,9 +13,8 @@ import schemas from '../schemas.json';
   styleUrls: ['./schema.component.scss']
 })
 export class SchemaComponent implements OnInit, OnDestroy {
-	editorIsCollapsed: boolean = false;
-	definitionIsCollapsed: boolean = true;
-	initialSchema: any;
+	sourceSchema: any;
+	targetSchema: any;
 	currentSchema: any;
 	initialDefinition: DefinitionItem[] = [{path: null, description: null, type: null, schema: null, required: false, comments: null}];
 	currentDefinition: DefinitionItem[] = [];
@@ -28,26 +26,14 @@ export class SchemaComponent implements OnInit, OnDestroy {
 		this.routeSub = this._route.params.subscribe(params => {
 			// todo: Should be a fetch once we have a backend
 			const schema = schemas.find(schema => schema.id === params.schemaId);
-			this.initialSchema = schema.schema;
-			this.currentSchema = this.initialSchema;
+			this.sourceSchema = schema.schema;
+			this.currentSchema = this.sourceSchema;
 			this.initialDefinition = schema.definition;
 		});
 	};
 
 	ngOnDestroy() {
 		this.routeSub.unsubscribe();
-	}
-
-	/**
-	 * Toggle the appropriate collapse element open/closed
-	 * @param collapse
-	 */
-	toggleCollapse(collapse: 'editor' | 'definition') {
-		if (collapse === 'editor') {
-			this.editorIsCollapsed = !this.editorIsCollapsed;
-		}else{
-			this.definitionIsCollapsed = !this.definitionIsCollapsed;
-		}
 	}
 
 	/**
@@ -61,7 +47,7 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	 * Set the editor value to the initial value
 	 */
 	revertToOriginalSchema() {
-		this.initialSchema = Object.assign({}, this.initialSchema);
+		this.sourceSchema = Object.assign({}, this.sourceSchema);
 	}
 
 	/**

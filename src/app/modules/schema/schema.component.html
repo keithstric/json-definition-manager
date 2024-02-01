@@ -1,14 +1,25 @@
 <div class="schema-container flex-column">
 
-	<!-- Schema Editor -->
-	<div class="card">
-		<div class="collapse-header card-header flex-row align-items-center justify-content-between" (click)="toggleCollapse('editor')">
-			Editor
-			<i class="fa-solid" [ngClass]="{'fa-chevron-down': editorIsCollapsed, 'fa-chevron-up': !editorIsCollapsed}"></i>
+	<!-- Source Editor -->
+	<app-collapse-card title="Source Editor" isCollapsed="true">
+		<div content class="schema-editor flex-row">
+			<app-schema-editor [initialSchema]="sourceSchema" (dataChanged)="updateCurrentSchema($event)"></app-schema-editor>
 		</div>
-		<div id="collapseEditor card-body" class="card-body" [collapse]="editorIsCollapsed">
+		<div footer class="collapse-actions flex-row justify-content-end">
+			<button class="btn btn-primary card-link" (click)="saveSchema()">Save</button>
+			<button class="btn card-link" (click)="revertToOriginalSchema()">Revert to Original</button>
+			<button class="btn card-link" (click)="copyToDefinition()">Copy to Definition</button>
+		</div>
+	</app-collapse-card>
+
+	<!--<div class="card">
+		<div class="collapse-header card-header flex-row align-items-center justify-content-between" (click)="toggleCollapse('sourceEditor')">
+			Source Editor
+			<i class="fa-solid" [ngClass]="{'fa-chevron-down': sourceEditorIsCollapsed, 'fa-chevron-up': !sourceEditorIsCollapsed}"></i>
+		</div>
+		<div id="collapseSourceEditor card-body" class="card-body" [collapse]="sourceEditorIsCollapsed">
 			<div class="schema-editor flex-row">
-				<app-schema-editor [initialSchema]="initialSchema" (dataChanged)="updateCurrentSchema($event)"></app-schema-editor>
+				<app-schema-editor [initialSchema]="sourceSchema" (dataChanged)="updateCurrentSchema($event)"></app-schema-editor>
 			</div>
 			<div class="actions flex-row justify-content-end">
 				<button class="btn btn-primary card-link" (click)="saveSchema()">Save</button>
@@ -16,22 +27,23 @@
 				<button class="btn card-link" (click)="copyToDefinition()">Copy to Definition</button>
 			</div>
 		</div>
-	</div>
+	</div>-->
+
+	<!-- target Editor -->
+	<app-collapse-card title="Target Editor" isCollapsed="true">
+		<div content class="schema-editor flex-row">
+			<app-schema-editor [initialSchema]="sourceSchema" (dataChanged)="updateCurrentSchema($event)"></app-schema-editor>
+		</div>
+	</app-collapse-card>
 
 	<!-- Definition Table -->
-	<div class="card">
-		<div class="collapse-header card-header flex-row align-items-center justify-content-between" (click)="toggleCollapse('definition')">
-			Definition
-			<i class="fa-solid" [ngClass]="{'fa-chevron-down': definitionIsCollapsed, 'fa-chevron-up': !definitionIsCollapsed}"></i>
+	<app-collapse-card title="Definition" isCollapsed="true">
+		<div content class="schema-editor flex-row">
+			<app-schema-definition [initialDefinition]="initialDefinition" (dataChanged)="updateCurrentDefinition($event)"></app-schema-definition>
 		</div>
-		<div id="collapseDefinition" class="card-body" [collapse]="definitionIsCollapsed">
-			<div class="schema-editor flex-row">
-				<app-schema-definition [initialDefinition]="initialDefinition" (dataChanged)="updateCurrentDefinition($event)"></app-schema-definition>
-			</div>
-			<div class="actions flex-row justify-content-end">
-				<button class="btn btn-primary card-link" (click)="saveDefinition()">Save</button>
-				<button class="btn card-link" (click)="revertToOriginalDefinition()">Revert to Original</button>
-			</div>
+		<div footer class="collapse-actions flex-row justify-content-end">
+			<button class="btn btn-primary card-link" (click)="saveDefinition()">Save</button>
+			<button class="btn card-link" (click)="revertToOriginalDefinition()">Revert to Original</button>
 		</div>
-	</div>
+	</app-collapse-card>
 </div>

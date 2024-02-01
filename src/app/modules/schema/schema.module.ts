@@ -9,6 +9,7 @@ import {NgJsonEditorModule} from 'ang-jsoneditor';
 import { SchemaComponent } from 'src/app/modules/schema/schema.component';
 import { SchemaEditorComponent } from './components/schema-editor/schema-editor.component';
 import { SchemaDefinitionComponent } from './components/schema-definition/schema-definition.component';
+import { CollapseCardComponent } from './components/collapse-card/collapse-card.component';
 
 
 
@@ -17,6 +18,7 @@ import { SchemaDefinitionComponent } from './components/schema-definition/schema
     SchemaComponent,
     SchemaEditorComponent,
     SchemaDefinitionComponent,
+    CollapseCardComponent,
   ],
 	imports: [
 		CommonModule,
