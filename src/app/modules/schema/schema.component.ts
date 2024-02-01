@@ -1,11 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {collection, doc, Firestore, setDoc} from '@angular/fire/firestore';
 import {ActivatedRoute} from '@angular/router';
 import {
 	DefinitionDataTypes,
 	DefinitionItem,
 } from '@modules/schema/interfaces/schema.interface';
+import {ISchema} from '@shared/interfaces/map.interface';
 import {Subscription} from 'rxjs';
-import schemas from '../schemas.json';
+import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'app-schema',
@@ -19,28 +21,44 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	initialDefinition: DefinitionItem[] = [{path: null, description: null, type: null, schema: null, required: false, comments: null}];
 	currentDefinition: DefinitionItem[] = [];
 	routeSub: Subscription;
+	firestore: Firestore = inject(Firestore);
 
-	constructor(private _route: ActivatedRoute) {}
+	constructor(
+		private _route: ActivatedRoute,
+	) {}
 
 	ngOnInit() {
-		this.routeSub = this._route.params.subscribe(params => {
+		/*this.routeSub = this._route.params.subscribe(params => {
 			// todo: Should be a fetch once we have a backend
 			const schema = schemas.find(schema => schema.id === params.schemaId);
 			this.sourceSchema = schema.schema;
 			this.currentSchema = this.sourceSchema;
 			this.initialDefinition = schema.definition;
-		});
+		});*/
 	};
 
-	ngOnDestroy() {
-		this.routeSub.unsubscribe();
-	}
+	ngOnDestroy() {}
 
 	/**
 	 * Save the current schema
 	 */
-	saveSchema() {
+	async saveSchema() {
 		console.log('saveSchema, currentSchema', this.currentSchema);
+		try {
+			const schemasColl = collection(this.firestore, 'schemas');
+			const newDoc: ISchema = {
+				name: 'New Doc',
+				id: uuid(),
+				schema: this.currentSchema,
+				createdBy: 'keithstric@gmail.com',
+				createdDate: new Date().toISOString()
+			};
+			const docRef = doc(schemasColl, newDoc.id);
+			const newDocRef = await setDoc(docRef, newDoc);
+			console.log('newDocRef=', newDocRef);
+		}catch(e) {
+			console.error(e);
+		}
 	}
 
 	/**
