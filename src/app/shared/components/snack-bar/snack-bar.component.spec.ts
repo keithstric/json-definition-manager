@@ -26,4 +26,12 @@ describe('SnackBarComponent', () => {
 	it('should create', () => {
 		expect(component).toBeTruthy();
 	});
+
+	it('should emit dismissSnackbar event', (done) => {
+		component.dismissSnackbar.subscribe((evt) => {
+			expect(evt).toBeFalsy();
+			done();
+		});
+		component.dismiss();
+	});
 });

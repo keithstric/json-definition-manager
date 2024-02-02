@@ -1,9 +1,8 @@
-import {Component, OnDestroy, OnInit, inject} from '@angular/core';
-import {collection, collectionData, Firestore} from '@angular/fire/firestore';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FirestoreService} from '@core/services/firestore/firestore.service';
 import {HttpService} from '@core/services/http/http.service';
 import {LayoutService} from '@layout/services/layout/layout.service';
 import {ISchema} from '@shared/interfaces/map.interface';
-import {Observable} from 'rxjs';
 import users from '../users.json';
 
 @Component({
@@ -13,19 +12,22 @@ import users from '../users.json';
 })
 export class HomeComponent implements OnInit, OnDestroy {
 	origHeaderComponent: any;
-	firestore: Firestore = inject(Firestore);
-	schemas$: Observable<ISchema[]>;
+	schemas: ISchema[];
 
 	constructor(
 		private _http: HttpService,
-		private _layout: LayoutService
-	) {
-		const schemasColl = collection(this.firestore, 'schemas');
-		this.schemas$ = collectionData(schemasColl) as unknown as Observable<ISchema[]>;
-	}
+		private _layout: LayoutService,
+		private _firestore: FirestoreService,
+	) {}
 
-	ngOnInit(): void {
+	async ngOnInit(): Promise<void> {
 		this.origHeaderComponent = this._layout.headerSource.value;
+		const result = await this._firestore.getAllDocuments<ISchema>('schemas');
+		this.schemas = result.sort((a,b) => {
+			const aName = a.name;
+			const bName = b.name;
+			return aName > bName ? 1 : aName < bName ? -1 : 0;
+		});
 	}
 
 	ngOnDestroy() {

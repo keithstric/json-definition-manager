@@ -3,14 +3,14 @@
 
 .snackbar-container {
 	position: fixed;
-	bottom: 65px;
+	bottom: 15px;
 	left: 15px;
 	align-items: center;
 	justify-content: space-between;
 	border: 1px solid transparent;
 	padding: .75rem 1.25rem;
 	margin-bottom: 1rem;
-	z-index: 10;
+	z-index: 1075; // ensure it's over any modal overlays
 	max-width: 92%;
 	@include border-radius(.25rem);
 	@include elevation(6);
@@ -46,6 +46,12 @@
 	&.dismiss-animation {
 		bottom: -10px;
 		@include slide-animation(0, 0.5s, animation-slide-out-down, ease);
+	}
+
+	&.default {
+		background-color: #11193e;
+		color: white;
+		border-color: #11193e;
 	}
 
 	&.info {

@@ -1,5 +1,6 @@
 @import 'ag-grid-community/styles/ag-grid.css';
 @import 'ag-grid-community/styles/ag-theme-quartz.css';
+@import 'src/scss/mixins';
 
 .ag-theme-quartz, .ag-theme-quartz-dark {
 	--ag-border-radius: 0;
@@ -63,5 +64,32 @@ button {
 		background-color: $app-primary;
 		color: white;
 		@include elevation(3);
+	}
+}
+
+.form-group {
+	margin-bottom: 7px;
+
+	label {
+		font-size: .95rem;
+	}
+
+	small {
+		font-size: .80rem;
+	}
+
+	.form-control {
+		&::placeholder {
+			opacity: .5;
+		}
+	}
+
+	.ng-invalid {
+		border: 1px solid $app-error;
+		@include hexToRgbaBackground($app-error, 0.1);
+	}
+
+	.error-text {
+		color: $app-error !important;
 	}
 }

@@ -52,6 +52,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "@types/tinycolor2": "^1.4.2",
+		"@types/uuid": "^9.0.8",
     "babel-loader": "^8.1.0",
     "codelyzer": "^6.0.0",
     "http-server": "^0.12.3",

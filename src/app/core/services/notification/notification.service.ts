@@ -1,15 +1,14 @@
 import {Injectable} from '@angular/core';
 import {ServiceLocator} from '@core/services/service-locator';
-import {ConfirmModalConfig} from '@shared/components/confirm-modal/confirm-modal.interface';
+import {ConfirmModalComponent} from '@shared/components/confirm-modal/confirm-modal.component';
 import {SnackbarConfig} from '@shared/components/snack-bar/snack-bar.interface';
 import {SnackBarRef} from '@shared/components/snack-bar/snack-bar.ref';
+import { ConfirmModalConfig } from '@shared/components/confirm-modal/confirm-modal.interface';
+import {BsModalService, ModalOptions} from 'ngx-bootstrap/modal';
 
-enum NotificationPermissions {
-	GRANTED = 'granted',
-	DENIED = 'denied',
-	DEFAULT = 'default'
-}
-
+/**
+ * This service should only contain static methods for showing notifications to the user
+ */
 @Injectable()
 export class NotificationService {
 
@@ -28,14 +27,30 @@ export class NotificationService {
 	 * Show a confirmation dialog
 	 *
 	 * @example
-	 * const ref = this._ui.showConfirmDialog({message: 'foo', title: 'bar'});
-	 * // if you don't care about the result, you can omit this
-	 * ref.afterOpen().subscribe(result => {console.log(result)});
+	 * import {ViewChild} from '@angular/core';
+	 * import {ConfirmModalConfig} from 'gis-ui/src/app/shared/components/confirm-modal/confirm-modal.interface';
+	 *
+	 * const confirmHandler = (data: any) => {
+	 * 	console.log('A custom confirmation handler', data);
+	 * };
+	 * const textModalConfig: ConfirmModalConfig = {
+	 * 	modalTitle: 'A Custom Modal',
+	 * 	modalTextContent: 'This will be the content of the modal dialog',
+	 * 	data: 'foo', // can be anything
+	 * 	confirmButtonLabel: 'Send it!',
+	 * 	confirmHandler: confirmHandler.bind(this)
+	 * };
+	 * NotificationService.showConfirmDialog(textModalConfig);
 	 *
 	 * @param modalConfig
 	 */
 	static showConfirmDialog(modalConfig: ConfirmModalConfig) {
-		// const bsModalService = ServiceLocator.injector.get(BsModalService);
-		// return bsModalService.show(ConfirmModalComponent, {initialState: modalConfig});
+		// because this is a static method, cannot inject BsModalService into constructor and use that, need to locate it
+		const bsModalService = ServiceLocator.injector.get(BsModalService);
+		const modalConfigImpl: ModalOptions<ConfirmModalConfig> = {
+			...modalConfig.ngModalOptions,
+			initialState: modalConfig,
+		};
+		return bsModalService.show(ConfirmModalComponent, modalConfigImpl);
 	}
 }

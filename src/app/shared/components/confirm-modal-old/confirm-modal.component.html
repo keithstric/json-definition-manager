@@ -2,31 +2,31 @@
 	<div class="modal-header-text">
 		{{modalHeaderText}}
 	</div>
-	<button class="btn btn-link close-button" *ngIf="!hideCloseButton" (click)="onClose()">
-		<i class="icon-close"></i>
+	<button class="btn btn-reset" (click)="onClose()">
+		<i class="material-icons">close</i>
 	</button>
 </div>
 <div class="modal-body">
 	<h2 *ngIf="modalTitle" class="modalTitle">{{modalTitle}}</h2>
-	<h2 *ngIf="modalTitleHtml" class="modalTitle" [innerHTML]="modalTitleHtml | safeHtml"></h2>
+	<h2 *ngIf="modalTitleHtml" class="modalTitle" [innerHTML]="modalTitleHtml"></h2>
 	<h6 *ngIf="modalSubHeading" class="modalSubHeading">{{modalSubHeading}}</h6>
-	<h6 *ngIf="modalSubHeadingHtml" class="modalSubHeading" [innerHTML]="modalSubHeadingHtml | safeHtml"></h6>
-	<div *ngIf="modalHtmlContent" class="content-container" [innerHTML]="modalHtmlContent | safeHtml"></div>
+	<h6 *ngIf="modalSubHeadingHtml" class="modalSubHeading" [innerHTML]="modalSubHeadingHtml"></h6>
+	<div *ngIf="modalHtmlContent" class="content-container" [innerHTML]="modalHtmlContent"></div>
 	<div *ngIf="modalTextContent" class="content-container">{{modalTextContent}}</div>
 	<ng-template *ngIf="modalTemplateContent" [ngTemplateOutlet]="modalTemplateContent"></ng-template>
 	<ng-template appViewRef></ng-template>
 </div>
-<div class="modal-footer flex-row" *ngIf="!hideFooter">
+<div class="modal-footer flex-row">
 	<button
 		*ngIf="!hideCancelButton"
-		class="btn btn-sm btn-outline-primary"
+		class="btn rds--button--primary"
 		(click)="onCancel()">
 		{{cancelButtonLabel}}
 	</button>
 	<button
 		*ngIf="!hideConfirmButton"
-		class="btn btn-sm btn-primary"
-		[disabled]="formGroup ? formGroup.invalid : confirmButtonDisabled"
+		class="btn btn-primary"
+		[disabled]="formGroup ? formGroup.invalid : false"
 		(click)="onConfirm()">
 		{{confirmButtonLabel}}
 	</button>

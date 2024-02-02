@@ -1,13 +1,11 @@
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {collection, doc, Firestore, setDoc} from '@angular/fire/firestore';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {
-	DefinitionDataTypes,
-	DefinitionItem,
-} from '@modules/schema/interfaces/schema.interface';
+import {FirestoreService} from '@core/services/firestore/firestore.service';
+import {NotificationService} from '@core/services/notification/notification.service';
+import {DefinitionDataTypes, DefinitionItem,} from '@modules/schema/interfaces/schema.interface';
+import {SnackbarMessageTypes} from '@shared/components/snack-bar/snack-bar.interface';
 import {ISchema} from '@shared/interfaces/map.interface';
 import {Subscription} from 'rxjs';
-import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'app-schema',
@@ -15,57 +13,79 @@ import {v4 as uuid} from 'uuid';
   styleUrls: ['./schema.component.scss']
 })
 export class SchemaComponent implements OnInit, OnDestroy {
-	sourceSchema: any;
-	targetSchema: any;
+	schemaDoc: ISchema;
+	schemaName: string;
+	schemaDesc: string;
+	/**
+	 * This is NOT the schema document but is the schema property inside the schema document
+	 */
+	schema: any;
+	/**
+	 * Current value of the editor, needed to prevent endless loop in the schema-editor component
+	 */
 	currentSchema: any;
-	initialDefinition: DefinitionItem[] = [{path: null, description: null, type: null, schema: null, required: false, comments: null}];
+	sourceDefinitionName: string;
+	definition: DefinitionItem[] = [{path: null, description: null, type: null, schema: null, required: false, comments: null}];
 	currentDefinition: DefinitionItem[] = [];
 	routeSub: Subscription;
-	firestore: Firestore = inject(Firestore);
+	docId: string;
 
 	constructor(
 		private _route: ActivatedRoute,
+		private firestore: FirestoreService,
 	) {}
 
-	ngOnInit() {
-		/*this.routeSub = this._route.params.subscribe(params => {
-			// todo: Should be a fetch once we have a backend
-			const schema = schemas.find(schema => schema.id === params.schemaId);
-			this.sourceSchema = schema.schema;
-			this.currentSchema = this.sourceSchema;
-			this.initialDefinition = schema.definition;
-		});*/
+	async ngOnInit() {
+		this.routeSub = this._route.params.subscribe(async (params) => {
+			this.docId = params.schemaId;
+			this.schemaDoc = await this.firestore.getDocument<ISchema>('schemas', this.docId);
+			if (this.schemaDoc) {
+				this.schema = this.schemaDoc.schema;
+				this.currentSchema = this.schemaDoc.schema;
+				this.schemaName = this.schemaDoc.name;
+				this.schemaDesc = this.schemaDoc.description;
+				this.definition = this.schemaDoc.definition;
+				this.currentDefinition = this.schemaDoc.definition;
+			}
+		});
 	};
 
-	ngOnDestroy() {}
+	ngOnDestroy() {
+		this.routeSub?.unsubscribe();
+	}
+
 
 	/**
 	 * Save the current schema
 	 */
 	async saveSchema() {
-		console.log('saveSchema, currentSchema', this.currentSchema);
-		try {
-			const schemasColl = collection(this.firestore, 'schemas');
-			const newDoc: ISchema = {
-				name: 'New Doc',
-				id: uuid(),
+		const workingDoc = this.docId !== 'new'
+			? {...this.schemaDoc, schema: this.currentSchema, definition: this.currentDefinition}
+			: {
+				name: this.schemaName,
+				description: this.schemaDesc,
 				schema: this.currentSchema,
-				createdBy: 'keithstric@gmail.com',
-				createdDate: new Date().toISOString()
+				definition: this.currentDefinition,
 			};
-			const docRef = doc(schemasColl, newDoc.id);
-			const newDocRef = await setDoc(docRef, newDoc);
-			console.log('newDocRef=', newDocRef);
-		}catch(e) {
-			console.error(e);
+		try {
+			const resultDoc = this.docId === 'new'
+				? await this.firestore.addDocument('schemas', workingDoc)
+				: await this.firestore.updateDocument('schemas', this.docId, workingDoc);
+			NotificationService.showSnackbar({
+				message: `Successfully ${this.docId == 'new' ? 'created' : 'updated'} the ${resultDoc.name} schema.`,
+				messageType: SnackbarMessageTypes.SUCCESS
+			});
+		}catch (e) {
+			throw e;
 		}
 	}
 
 	/**
 	 * Set the editor value to the initial value
 	 */
-	revertToOriginalSchema() {
-		this.sourceSchema = Object.assign({}, this.sourceSchema);
+	revertChanges() {
+		this.schema = Object.assign({}, this.schema);
+		this.definition = Object.assign({}, this.definition);
 	}
 
 	/**
@@ -74,6 +94,11 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	 */
 	updateCurrentSchema(newValue: any) {
 		this.currentSchema = newValue;
+		this.convertSchemaToDefinition();
+	}
+
+	updateCurrentDefinition(newValue: any) {
+		this.currentDefinition = newValue;
 	}
 
 	/**
@@ -81,7 +106,7 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	 * @param obj
 	 * @param parentPath
 	 */
-	copyToDefinition(obj?: any, parentPath?: string) {
+	convertSchemaToDefinition(obj?: any, parentPath?: string) {
 		obj = obj || this.currentSchema;
 		let returnVal = [];
 		Object.keys(obj).forEach(key => {
@@ -97,7 +122,7 @@ export class SchemaComponent implements OnInit, OnDestroy {
 				returnItem.path = parentPath ? `${parentPath}.${key}` : key;
 				returnItem.type = this._getDefinitionDataType(obj[key]);
 				returnVal.push(returnItem);
-				const childItems = this.copyToDefinition(obj[key], key);
+				const childItems = this.convertSchemaToDefinition(obj[key], key);
 				returnVal = [...returnVal, ...childItems];
 			}else{
 				returnItem.path = parentPath ? `${parentPath}.${key}` : key;
@@ -105,7 +130,7 @@ export class SchemaComponent implements OnInit, OnDestroy {
 				returnVal.push(returnItem);
 			}
 		});
-		this.initialDefinition = returnVal;
+		this.definition = returnVal;
 		return returnVal;
 	}
 
@@ -123,17 +148,5 @@ export class SchemaComponent implements OnInit, OnDestroy {
 			returnVal = typeof value;
 		}
 		return <"array" | "boolean" | "number" | "object" | "string">returnVal;
-	}
-
-	saveDefinition() {
-		console.log('saveDefinition, currentDefinition', this.currentDefinition);
-	}
-
-	revertToOriginalDefinition() {
-		this.initialDefinition = this.initialDefinition.slice();
-	}
-
-	updateCurrentDefinition(newValue: any) {
-		this.currentDefinition = newValue;
 	}
 }

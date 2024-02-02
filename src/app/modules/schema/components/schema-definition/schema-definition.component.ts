@@ -30,7 +30,7 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 	@ViewChild('gridContainer') gridContainer: ElementRef;
 
 	ngOnInit() {
-		// Gotta use the JSON.parse(JSON.stringify) trick to ensure currentDefinition isn't an instance of initialDefinition
+		// Gotta use the JSON.parse(JSON.stringify) trick to ensure currentDefinition isn't an instance of definition
 		this.currentDefinition = JSON.parse(JSON.stringify(this.initialDefinition));
 	}
 

@@ -2,7 +2,7 @@ import {ComponentRef, EmbeddedViewRef, Injectable, Injector} from '@angular/core
 import {DomInjectorService} from '@core/services/dom-injector/dom-injector.service';
 import {SnackBarComponent} from '@shared/components/snack-bar/snack-bar.component';
 import {SnackbarConfig} from '@shared/components/snack-bar/snack-bar.interface';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 
 interface SnackBarDisplay {
 	componentRef: ComponentRef<unknown>;
@@ -16,26 +16,19 @@ interface SnackBarDisplay {
  *
  * @example
  *
- * ```js
- * @Injectable()
- * export class NotificationService {
- *
- *   constructor(private _snackbarRef: SnackBarRef) {}
- *
- *   showSnackbar() {
- *     const config = {
- *     message: 'Here is a snackbar message',
- *     messageType: SnackbarMessageTypes.SUCCESS,
- *     duration: 5000,
- *     action: {
- *       label: 'OK',
- *       action: () => {
- *         console.log('action clicked')}
- *       }
+ * ```ts
+ * const config: SnackbarConfig = {
+ *   message: 'Here is a snackbar message',
+ *   messageType: SnackbarMessageTypes.SUCCESS,
+ *   duration: 5000, // set to 0 to force user to dismiss snackbar
+ *   action: {
+ *     label: 'OK',
+ *     action: () => {
+ *       console.log('action clicked');
  *     }
- *     this._snackbarRef.show(config);
  *   }
- * }
+ * };
+ * NotificationService.showSnackbar(config);
  * ```
  */
 @Injectable()
@@ -55,6 +48,7 @@ export class SnackBarRef {
 	 * @private
 	 */
 	private snackbarsQue: BehaviorSubject<SnackBarDisplay[]> = new BehaviorSubject<SnackBarDisplay[]>([]);
+	private _queListener: Subscription;
 
 	constructor(private _injector: Injector) {
 		this._listenToSnackBars();
@@ -65,14 +59,15 @@ export class SnackBarRef {
 	 * the currently displayed snackbar is dismissed and the que changes
 	 */
 	private _listenToSnackBars() {
-		this.snackbarsQue
-			.subscribe((snackBars) => {
-				if (snackBars && snackBars.length) {
-					if (!this._currentSnackbar) {
+		if (!this._queListener) {
+			this._queListener = this.snackbarsQue
+				.subscribe((snackBars) => {
+					// console.log('_listenToSnackBars, snackBars=', snackBars);
+					if (snackBars?.length && !this._currentSnackbar) {
 						this._displaySnackbar(snackBars[0]);
 					}
-				}
-			});
+				});
+		}
 	}
 
 	/**
@@ -81,6 +76,7 @@ export class SnackBarRef {
 	 * @returns {ComponentRef}
 	 */
 	show(config: SnackbarConfig): ComponentRef<unknown> {
+		// console.log('show', config);
 		if (!this._domInjector) {
 			this._domInjector = this._injector.get(DomInjectorService);
 		}
@@ -97,12 +93,23 @@ export class SnackBarRef {
 	 * @private
 	 */
 	private _displaySnackbar(currentSnackbar: SnackBarDisplay): void {
+		// console.log('_displaySnackbar, currentSnackbar=', currentSnackbar);
 		if (currentSnackbar) {
 			const {componentRef, config} = currentSnackbar;
 			// remove snackbar after set time
-			currentSnackbar.timeout = setTimeout(() => {
-				this.dismiss();
-			}, config.duration || 5000);
+			const duration = config.duration > 0
+				? config.duration
+				: config.duration === null || config.duration === undefined
+					? 5000
+					: 0;
+			// if the duration is 0, then we want the snackbar to hang around until manually dismissed by user
+			if (duration > 0) {
+				currentSnackbar.timeout = setTimeout(() => {
+					// console.log('_displaySnackbar, currentSnackbar timeout to dismiss in config.duration', config.duration);
+					// console.log('_displaySnackbar, currentSnackbar timeout to dismiss in duration', duration);
+					this.dismiss();
+				}, duration);
+			}
 			this._currentSnackbar = currentSnackbar;
 			this._setSnackbarDismissEventHandler(componentRef.instance as SnackBarComponent);
 			this._domInjector.attachComponent(componentRef, document.body);
@@ -117,7 +124,8 @@ export class SnackBarRef {
 	 * @returns {Promise}
 	 */
 	dismiss() {
-		clearTimeout(this._currentSnackbar.timeout);
+		// console.log('dismiss, currentSnackbar=', this._currentSnackbar);
+		clearTimeout(this._currentSnackbar?.timeout);
 		this._addExitAnimationClass();
 		// wait for animation to finish, animation is 500ms
 		setTimeout(() => {
@@ -151,7 +159,7 @@ export class SnackBarRef {
 	 */
 	private _getDomElement() {
 		const {componentRef} = this._currentSnackbar;
-		return (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
+		return (componentRef.hostView as EmbeddedViewRef<any>)?.rootNodes[0] as HTMLElement;
 	}
 
 	/**
@@ -160,8 +168,8 @@ export class SnackBarRef {
 	 */
 	private _addExitAnimationClass() {
 		const domElement = this._getDomElement();
-		const domContainer = domElement.querySelector('.snackbar-container');
-		domContainer.classList.add('dismiss-animation');
+		const domContainer = domElement?.querySelector('.snackbar-container');
+		domContainer?.classList.add('dismiss-animation');
 	}
 
 	/**

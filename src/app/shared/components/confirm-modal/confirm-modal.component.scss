@@ -1,4 +1,27 @@
+@import "src/scss/variables";
+
+.modal-header {
+	padding: 1rem;
+
+	.close-button {
+		color: $dark-grey;
+	}
+}
+
 .modal-body {
+	overflow-y: auto;
+
+	@media (min-width: 768px) {
+		max-height: 500px;
+	}
+
+	@media (min-width: 992px) {
+		max-height: 600px;
+	}
+
+	@media (min-width: 1200px) {
+		max-height: 700px;
+	}
 
 	.modalSubHeading {
 		opacity: 0.6;
@@ -22,4 +45,5 @@
 
 .modal-footer {
 	justify-content: flex-end !important;
+	padding: 1rem;
 }

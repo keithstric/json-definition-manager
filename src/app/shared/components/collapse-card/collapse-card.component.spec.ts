@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CollapseCardComponent } from './collapse-card.component';
+import { CollapseCardComponent } from 'src/app/shared/components/collapse-card/collapse-card.component';
 
 describe('CollapseCardComponent', () => {
   let component: CollapseCardComponent;

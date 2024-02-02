@@ -5,15 +5,33 @@
 
 	.schema-editor {
 		box-sizing: border-box;
+		padding: 10px;
 		app-schema-editor {
 			flex-grow: 1;
 		}
 	}
 
-	collapse-actions {
+	.action-container {
+		margin-bottom: 1rem;
 		.btn {
 			margin-right: 0.25rem;
 			border: 1px solid $primary;
+		}
+	}
+
+	.form-container {
+
+		.form-group {
+			flex-basis: 0;
+			flex-grow: 1;
+
+			&:last-child {
+				margin-left: 10px;
+			}
+
+			.error-text {
+				color: red !important;
+			}
 		}
 	}
 }

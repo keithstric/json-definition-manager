@@ -23,7 +23,6 @@ const layoutComponents = [
 		CommonModule,
 		NgxBootstrapModule,
 		RouterModule,
-		SharedModule
 	],
 	declarations: [
 		...layoutComponents

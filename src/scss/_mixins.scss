@@ -90,6 +90,13 @@
 }
 /********************/
 
+@mixin hexToRgbaBackground($hex, $opacity) {
+	$red: red($hex);
+	$green: green($hex);
+	$blue: blue($hex);
+	background-color: rgba($red, $green, $blue, $opacity);
+}
+
 /**
  * Slide in
  */

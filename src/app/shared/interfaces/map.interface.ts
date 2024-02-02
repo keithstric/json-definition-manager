@@ -14,7 +14,9 @@ export interface IMap extends IDbDoc {
 }
 export interface ISchema extends IDbDoc {
 	name: string;
+	description: string;
 	schema: any;
+	definition: any;
 }
 export interface IPropertyDefinition extends IDbDoc {
 	path: string;

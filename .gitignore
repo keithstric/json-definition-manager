@@ -11,6 +11,7 @@
 # dependencies
 /node_modules
 documentation.json
+firebase-cred.json
 
 # profiling files
 chrome-profiler-events*.json

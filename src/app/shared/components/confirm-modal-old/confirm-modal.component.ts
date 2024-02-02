@@ -1,15 +1,6 @@
-import {
-	Component,
-	ComponentFactoryResolver, ElementRef,
-	Injector,
-	OnInit,
-	TemplateRef,
-	Type,
-	ViewChild
-} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {Component, ComponentFactoryResolver, Injector, OnInit, TemplateRef, Type, ViewChild} from '@angular/core';
+import {UntypedFormGroup} from '@angular/forms';
 import {ViewRefDirective} from '@shared/directives/view-ref/view-ref.directive';
-import {BsModalRef, ModalOptions} from 'ngx-bootstrap/modal';
 
 @Component({
 	selector: 'app-confirm-modal',
@@ -27,50 +18,40 @@ export class ConfirmModalComponent implements OnInit {
 	modalTemplateContent: TemplateRef<any>;
 	modalComponentContent: Type<any>;
 	modalComponentContentInitialState: any;
-	modalComponentContentInstance: any;
-	hideCloseButton: boolean = false;
 	hideCancelButton: boolean = false;
 	hideConfirmButton: boolean = false;
 	cancelButtonLabel: string = 'cancel';
 	confirmButtonLabel: string = 'ok';
-	confirmButtonDisabled: boolean = false;
 	confirmHandler: any;
 	cancelHandler: any;
 	data: any;
-	formGroup: FormGroup;
-	ngModalOptions: ModalOptions;
+	formGroup: UntypedFormGroup;
 	componentInjector: Injector;
 	closeOnConfirm: boolean = true;
 	closeOnCancel: boolean = true;
 	closeHandler: any;
-	disableCloseButton: boolean = false;
-	hideFooter: boolean = false;
 
 	@ViewChild(ViewRefDirective, {static: true}) componentViewRef: ViewRefDirective;
 
-	constructor(
-		public bsModalRef: BsModalRef,
-		private _componentFactoryResolver: ComponentFactoryResolver
-	) {}
+	constructor(private _componentFactoryResolver: ComponentFactoryResolver) {}
 
-	ngOnInit() {
+	ngOnInit(): void {
 		if (this.modalComponentContent) {
-			this.createContentComponent();
+			this._createContentComponent();
 		}
 	}
 
 	/**
-	 * Create an instance of the modalComponentContent component, insert it
-	 * into the DOM and set any properties defined in modalComponentContentInitialState
+	 * Create an instance of the modalComponentContent component, insert
+	 * into the DOM and set any properties defined in modalTemplateComponentInitialState
 	 */
-	createContentComponent() {
+	private _createContentComponent() {
 		const compFactory = this._componentFactoryResolver.resolveComponentFactory(this.modalComponentContent);
-		this.componentViewRef.viewContainerRef.clear();
 		const componentRef = this.componentViewRef.viewContainerRef.createComponent(compFactory);
-		this.modalComponentContentInstance = componentRef.instance;
+		const componentInstance = componentRef.instance;
 		if (this.modalComponentContentInitialState) {
 			Object.keys(this.modalComponentContentInitialState).forEach((key) => {
-				this.modalComponentContentInstance[key] = this.modalComponentContentInitialState[key];
+				componentInstance[key] = this.modalComponentContentInitialState[key];
 			});
 		}
 	}
@@ -79,12 +60,10 @@ export class ConfirmModalComponent implements OnInit {
 	 * handler when the close button is clicked
 	 */
 	onClose() {
-		if (this.disableCloseButton) {
-			return;
-		} else if (this.closeHandler) {
+		if (this.closeHandler) {
 			this.closeHandler();
 		}
-		this.bsModalRef.hide();
+		// this.bsModalRef.hide();
 	}
 
 	/**
@@ -95,7 +74,7 @@ export class ConfirmModalComponent implements OnInit {
 			this.cancelHandler();
 		}
 		if (this.closeOnCancel) {
-			this.bsModalRef.hide();
+			// this.bsModalRef.hide();
 		}
 	}
 
@@ -109,7 +88,7 @@ export class ConfirmModalComponent implements OnInit {
 			console.warn('No confirmHandler for the ConfirmModalComponent');
 		}
 		if (this.closeOnConfirm) {
-			this.bsModalRef.hide();
+			// this.bsModalRef.hide();
 		}
 	}
 }
