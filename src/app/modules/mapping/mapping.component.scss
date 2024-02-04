@@ -1,0 +1,18 @@
+.mapping-container {
+	height: 100%;
+
+	.source-schema {
+		flex-basis: 0;
+		flex-grow: 1;
+	}
+
+	.target-schema {
+		flex-basis: 0;
+		flex-grow: 1;
+	}
+
+	.mapping {
+		flex-basis:275px;
+		flex-grow: 0;
+	}
+}

@@ -24,7 +24,6 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	 * Current value of the editor, needed to prevent endless loop in the schema-editor component
 	 */
 	currentSchema: any;
-	sourceDefinitionName: string;
 	definition: DefinitionItem[] = [{path: null, description: null, type: null, schema: null, required: false, comments: null}];
 	currentDefinition: DefinitionItem[] = [];
 	routeSub: Subscription;
@@ -48,12 +47,11 @@ export class SchemaComponent implements OnInit, OnDestroy {
 				this.currentDefinition = this.schemaDoc.definition;
 			}
 		});
-	};
+	}
 
 	ngOnDestroy() {
 		this.routeSub?.unsubscribe();
 	}
-
 
 	/**
 	 * Save the current schema
@@ -72,7 +70,7 @@ export class SchemaComponent implements OnInit, OnDestroy {
 				? await this.firestore.addDocument('schemas', workingDoc)
 				: await this.firestore.updateDocument('schemas', this.docId, workingDoc);
 			NotificationService.showSnackbar({
-				message: `Successfully ${this.docId == 'new' ? 'created' : 'updated'} the ${resultDoc.name} schema.`,
+				message: `Successfully ${this.docId === 'new' ? 'created' : 'updated'} the ${resultDoc.name} schema.`,
 				messageType: SnackbarMessageTypes.SUCCESS
 			});
 		}catch (e) {

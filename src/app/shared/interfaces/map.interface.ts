@@ -7,9 +7,8 @@ export interface IDbDoc {
 }
 export interface IMap extends IDbDoc {
 	name: string;
-	targetSchema: ISchema;
-	sourceSchema: ISchema;
-	definition: IPropertyDefinition[];
+	targetSchemaId: string;
+	sourceSchemaId: string;
 	collaborators: string[];
 }
 export interface ISchema extends IDbDoc {
@@ -18,7 +17,7 @@ export interface ISchema extends IDbDoc {
 	schema: any;
 	definition: any;
 }
-export interface IPropertyDefinition extends IDbDoc {
+export interface IPropertyDefinition {
 	path: string;
 	description: string;
 	type: string;

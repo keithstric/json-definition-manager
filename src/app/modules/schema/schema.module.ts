@@ -18,12 +18,12 @@ import { SchemaDefinitionComponent } from './components/schema-definition/schema
     SchemaDefinitionComponent,
   ],
 	imports: [
+		AgGridModule,
 		CommonModule,
 		LayoutModule,
 		NgJsonEditorModule,
 		SchemaRoutingModule,
 		SharedModule,
-		AgGridModule
 	]
 })
 export class SchemaModule { }
