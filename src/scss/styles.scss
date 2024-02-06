@@ -24,8 +24,8 @@
  * the compilation of scss
  */
 
-// @import 'bootstrap/scss/bootstrap'; // Imports ALL of bootstrap, comment out all bootstrap imports below if you use this to prevent duplicate imports
-@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/bootstrap'; // Imports ALL of bootstrap, comment out all bootstrap imports below if you use this to prevent duplicate imports
+/*@import 'bootstrap/scss/root';
 @import 'bootstrap/scss/alert';
 @import 'bootstrap/scss/buttons';
 @import 'bootstrap/scss/button-group';
@@ -42,7 +42,7 @@
 @import 'bootstrap/scss/type';
 @import 'bootstrap/scss/nav';
 @import 'bootstrap/scss/badge';
-@import 'bootstrap/scss/list-group';
+@import 'bootstrap/scss/list-group';*/
 
 @import 'mixins';
 
@@ -55,7 +55,6 @@
 @import 'misc/bootstrap-overrides';
 @import 'misc/flexbox';
 @import "jsoneditor/dist/jsoneditor.min.css";
-@import 'misc/flexbox';
 @import 'misc/app-global';
 
 /**

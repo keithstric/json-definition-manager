@@ -8,8 +8,8 @@ import {PageNotFoundComponent} from '@layout/components/page-not-found/page-not-
  */
 export const appRoutes: Routes = [
 	{path: '', loadChildren: () => import('./modules/home/home.module').then(m => m.HomeModule)},
-	{path: 'schema', loadChildren: () => import('./modules/schema/schema.module').then(m => m.SchemaModule)},
-	{path: 'mapping', loadChildren: () => import('./modules/mapping/mapping.module').then(m => m.MappingModule)},
+	{path: 'schemas', loadChildren: () => import('./modules/schema/schema.module').then(m => m.SchemaModule)},
+	{path: 'mappings', loadChildren: () => import('./modules/mapping/mapping.module').then(m => m.MappingModule)},
 	{path: '**', component: PageNotFoundComponent}
 ];
 

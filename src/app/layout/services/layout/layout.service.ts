@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {SiteFooterComponent} from '@layout/components/site-footer/site-footer.component';
 import {SiteHeaderComponent} from '@layout/components/site-header/site-header.component';
+import {SiteSidebarComponent} from '@layout/components/site-sidebar/site-sidebar.component';
 import {BehaviorSubject} from 'rxjs';
 
 /**
@@ -14,7 +15,7 @@ export class LayoutService {
 	headerComponent = this.headerSource.asObservable();
 	footerSource = new BehaviorSubject<any>(SiteFooterComponent);
 	footerComponent = this.footerSource.asObservable();
-	sidebarSource = new BehaviorSubject<any>(null);
+	sidebarSource = new BehaviorSubject<any>(SiteSidebarComponent);
 	sidebarComponent = this.sidebarSource.asObservable();
 
 	constructor() { }

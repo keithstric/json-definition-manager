@@ -1,0 +1,65 @@
+<div class="schema-container flex-column">
+
+	<div class="action-container flex-row justify-content-start">
+		<button
+			class="btn btn-primary card-link"
+			(click)="saveSchema()"
+			[disabled]="sourceSchemaNameFld.invalid || !currentSchema">
+			Save
+		</button>
+		<button class="btn card-link" (click)="revertChanges()">Revert to Original</button>
+	</div>
+
+	<!-- Source Editor -->
+	<app-collapse-card title="Schema JSON Editor" [isCollapsed]="true">
+		<div content class="schema-editor flex-column">
+			<div class="form-container flex-row justify-content-between">
+				<div class="form-group">
+					<label for="sourceSchemaName">Source Schema Name</label>
+					<input
+						[(ngModel)]="schemaName"
+						type="text"
+						class="form-control"
+						id="sourceSchemaName"
+						aria-describedby="sourceSchemaNameHelp"
+						placeholder="Enter the name of your schema"
+						required
+						minlength="4"
+						#sourceSchemaNameFld = "ngModel">
+					<small
+						*ngIf="!sourceSchemaNameFld.invalid"
+						id="sourceSchemaNameHelp"
+						class="form-text text-muted">
+						This schema will be saved independently. Be sure to define a useful name.
+					</small>
+					<small
+						*ngIf="sourceSchemaNameFld.invalid"
+						id="sourceSchemaNameHelp"
+						class="form-text text-muted error-text">
+						Source Schema Name is required and must be at least 4 characters in length
+					</small>
+				</div>
+				<div class="form-group">
+					<label for="sourceSchemaDesc">Source Schema Description</label>
+					<textarea
+						[(ngModel)]="schemaDesc"
+						type="text"
+						class="form-control"
+						id="sourceSchemaDesc"
+						aria-describedby="sourceSchemaDescHelp"
+						placeholder="Enter a description for your schema">
+					</textarea>
+					<small id="sourceSchemaDescHelp" class="form-text text-muted">Define a description for this schema.</small>
+				</div>
+			</div>
+			<app-schema-editor [initialSchema]="schema" (dataChanged)="updateCurrentSchema($event)"></app-schema-editor>
+		</div>
+	</app-collapse-card>
+
+	<!-- Definition Table -->
+	<app-collapse-card title="Schema Definition" [isCollapsed]="false">
+		<div content class="schema-editor">
+			<app-schema-definition [initialDefinition]="definition" (dataChanged)="updateCurrentDefinition($event)"></app-schema-definition>
+		</div>
+	</app-collapse-card>
+</div>

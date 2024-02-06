@@ -1,5 +1,16 @@
 .mapping-container {
 	height: 100%;
+	padding: 1rem;
+
+	.source-schema, .target-schema, .mapping {
+		border: 1px solid #afafaf;
+		border-radius: 5px;
+		margin-right: 5px;
+
+		&:last-of-type {
+			margin-right: 0;
+		}
+	}
 
 	.source-schema {
 		flex-basis: 0;
@@ -14,5 +25,9 @@
 	.mapping {
 		flex-basis:275px;
 		flex-grow: 0;
+
+		.source-mapping, .target-mapping {
+			height: 25%;
+		}
 	}
 }

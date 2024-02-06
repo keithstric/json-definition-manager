@@ -27,11 +27,11 @@ export class MappingComponent implements OnInit, OnDestroy {
 	async ngOnInit() {
 		this.routeSub = this._route.params.subscribe(async (params) => {
 			this.docId = params.mappingId;
-			this.mappingDoc = await this.firestore.getDocument<IMap>('mappings', this.docId);
+			this.mappingDoc = await this.firestore.getDocumentById<IMap>('mappings', this.docId);
 			if (this.mappingDoc) {
 				this.currentMapping = this.mappingDoc;
-				this.sourceSchema = await this.firestore.getDocument<ISchema>('schemas', this.mappingDoc.sourceSchemaId);
-				this.targetSchema = await this.firestore.getDocument<ISchema>('schemas', this.mappingDoc.targetSchemaId);
+				this.sourceSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.sourceSchemaId);
+				this.targetSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.targetSchemaId);
 				this.sourceDefinition = this.sourceSchema.definition;
 				this.targetDefinition = this.targetSchema.definition;
 			}

@@ -1,0 +1,14 @@
+<div class="btn-group" dropdown>
+	<div class="input-group mb-3">
+		<input [(ngModel)]="searchValue" type="text" class="form-control" placeholder="Search Schemas" (input)="searchSchemas($event)" />
+		<span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-magnifying-glass"></i></span>
+	</div>
+	<div
+		id="dropdown-basic"
+		*dropdownMenu
+		class="dropdown-menu"
+		role="menu"
+		aria-labelledby="button-basic">
+		<div class="menuitem" *ngFor="let item of selectItems" (click)="selectSchema(item)">{{item.label}}</div>
+	</div>
+</div>

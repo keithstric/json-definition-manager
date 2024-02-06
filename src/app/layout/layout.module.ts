@@ -8,6 +8,7 @@ import {NgxBootstrapModule} from '@layout/modules/ngx-bootstrap.module';
 import {LayoutService} from '@layout/services/layout/layout.service';
 import {LoadingService} from '@layout/services/loading/loading.service';
 import {SharedModule} from '@shared/shared.module';
+import { SiteSidebarComponent } from './components/site-sidebar/site-sidebar.component';
 
 const layoutComponents = [
 	PageNotFoundComponent,
@@ -25,7 +26,8 @@ const layoutComponents = [
 		RouterModule,
 	],
 	declarations: [
-		...layoutComponents
+		...layoutComponents,
+  SiteSidebarComponent
 	],
 	exports: [
 		...layoutComponents,

@@ -1,37 +1,7 @@
-@import 'src/scss/variables';
+.schemas-container {
+	padding: 1rem;
 
-.schema-container {
-	padding-top: 1rem;
-
-	.schema-editor {
-		box-sizing: border-box;
-		padding: 10px;
-		app-schema-editor {
-			flex-grow: 1;
-		}
-	}
-
-	.action-container {
-		margin-bottom: 1rem;
-		.btn {
-			margin-right: 0.25rem;
-			border: 1px solid $primary;
-		}
-	}
-
-	.form-container {
-
-		.form-group {
-			flex-basis: 0;
-			flex-grow: 1;
-
-			&:last-child {
-				margin-left: 10px;
-			}
-
-			.error-text {
-				color: red !important;
-			}
-		}
+	.actions-container {
+		padding: 5px 0;
 	}
 }

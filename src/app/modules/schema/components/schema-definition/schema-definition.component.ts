@@ -9,6 +9,7 @@ import {
 	SimpleChanges,
 	ViewChild
 } from '@angular/core';
+import {GridSchemaEditorComponent} from '@modules/schema/components/grid-schema-editor/grid-schema-editor.component';
 import {AgGridAngular} from 'ag-grid-angular';
 import {ColDef, GridApi, GridReadyEvent, IRowNode, RowEditingStartedEvent, RowEditingStoppedEvent} from 'ag-grid-community';
 import {Subscription} from 'rxjs';
@@ -48,33 +49,12 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 		this._setupGrid();
 	}
 
-	private _setupGrid() {
+	private async _setupGrid() {
 		const firstItem = this.currentDefinition?.length ? this.currentDefinition[0] : null;
 		let colDefs: ColDef[] = [];
 		if (firstItem) {
 			colDefs = Object.keys(firstItem).map(key => {
-				return {
-					field: key.toLowerCase(),
-					sortable: key === 'path',
-					cellEditor: key === 'type' ? 'agSelectCellEditor' : undefined,
-					cellEditorParams: key === 'type'
-						? {values: [
-							'array',
-							'boolean',
-							'boolean[]',
-							'custom',
-							'custom[]',
-							'date',
-							'date[]',
-							'number',
-							'number[]',
-							'object',
-							'object[]',
-							'string',
-							'string[]'
-						]}
-						: undefined
-				};
+				return this._getColumnDefinition(key);
 			});
 		}
 		this.gridApi.setGridOption('rowData', this.currentDefinition.slice());
@@ -82,6 +62,48 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 		this.gridApi.setGridOption('defaultColDef', {editable: true});
 		this.gridApi.setGridOption('editType', 'fullRow');
 		this.gridIsReady = true;
+	}
+
+	private _getColumnDefinition(key: string) {
+		let colDef = {
+			field: key.toLowerCase(),
+			sortable: key === 'path',
+			cellEditor: undefined,
+			cellEditorParams: undefined,
+		};
+		switch (key) {
+			case 'type':
+				colDef.cellEditor = 'agSelectCellEditor';
+				colDef.cellEditorParams = this._getTypeEditorVals();
+				break;
+			case 'schema':
+				colDef.cellEditor = GridSchemaEditorComponent;
+				colDef.cellEditorParams = {key};
+				break;
+		}
+		return colDef;
+	}
+
+	private _getTypeEditorVals () {
+		return {values: [
+			'array',
+			'boolean',
+			'boolean[]',
+			'custom',
+			'custom[]',
+			'date',
+			'date[]',
+			'number',
+			'number[]',
+			'object',
+			'object[]',
+			'string',
+			'string[]'
+		]};
+	}
+
+	private async _getSchemaEditorVals() {
+
 	}
 
 	_addRow() {

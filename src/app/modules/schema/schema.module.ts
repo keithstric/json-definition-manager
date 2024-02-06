@@ -8,11 +8,14 @@ import {NgJsonEditorModule} from 'ang-jsoneditor';
 import { SchemaComponent } from 'src/app/modules/schema/schema.component';
 import { SchemaEditorComponent } from './components/schema-editor/schema-editor.component';
 import { SchemaDefinitionComponent } from './components/schema-definition/schema-definition.component';
+import { EditSchemaComponent } from './pages/edit-schema/edit-schema.component';
+import { GridSchemaEditorComponent } from './components/grid-schema-editor/grid-schema-editor.component';
 
 
 
 @NgModule({
   declarations: [
+    EditSchemaComponent,
     SchemaComponent,
     SchemaEditorComponent,
     SchemaDefinitionComponent,

@@ -77,12 +77,16 @@
 
 		.site-content {
 			height: calc(100vh - 64px);
-			padding: 0 15px;
 			overflow: auto;
 
 			&.with-footer {
 				height: calc((100vh - 64px) - 64px);
 			}
+
+			.site-content-container {
+				width: 100%;
+			}
+		;
 		}
 	}
 }

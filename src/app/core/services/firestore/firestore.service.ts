@@ -1,5 +1,15 @@
 import {Injectable} from '@angular/core';
-import {collection, deleteDoc, doc, Firestore, getDoc, getDocs, setDoc, updateDoc} from '@angular/fire/firestore';
+import {
+	collection,
+	deleteDoc,
+	doc,
+	Firestore,
+	getDoc,
+	getDocs, query,
+	serverTimestamp,
+	setDoc,
+	updateDoc, where
+} from '@angular/fire/firestore';
 import {v4 as uuid} from 'uuid';
 
 @Injectable({
@@ -21,10 +31,27 @@ export class FirestoreService {
 		return doc(this.getCollection(collectionPath), id);
 	}
 
-	async getDocument<T>(collectionPath: string, documentId: string): Promise<T> {
+	async getDocumentById<T>(collectionPath: string, documentId: string): Promise<T> {
 		const docRef = this.getDocRef(collectionPath, documentId);
 		const docSnap = await getDoc(docRef);
 		return docSnap ? docSnap.data() as T : undefined;
+	}
+
+	async getDocumentsByQuery<T>(collectionPath: string, whereField: string, whereCondition: '==', whereValue: string): Promise<T[]> {
+		console.log('getDocumentsByQuery, collectionPath=', collectionPath);
+		console.log('getDocumentsByQuery, whereField=', whereField);
+		console.log('getDocumentsByQuery, whereCondition=', whereCondition);
+		console.log('getDocumentsByQuery, whereValue=', whereValue);
+		const returnVal = [];
+		const collection = this.getCollection(collectionPath);
+		const q = query(collection, where(whereField, whereCondition, whereValue));
+		const querySnap = await getDocs(q);
+		console.log('querySnap=', querySnap);
+		querySnap.forEach(doc => {
+			console.log('doc=', doc);
+			returnVal.push(doc.data())
+		});
+		return returnVal;
 	}
 
 	async getAllDocuments<T>(collectionPath: string): Promise<T[]> {
@@ -35,29 +62,29 @@ export class FirestoreService {
 	}
 
 	async addDocument<T>(collectionPath: string, payload: T, documentId?: string): Promise<T> {
-		(payload as any).createdDate = new Date().toISOString();
+		(payload as any).createdDate = serverTimestamp();
 		(payload as any).createdBy = 'keithstric@gmail.com';
 		const id = documentId ? documentId : uuid();
 		(payload as any).id = id;
 		const docRef = this.getDocRef(collectionPath, id);
 		await setDoc(docRef, payload);
-		return await this.getDocument<T>(collectionPath, id);
+		return await this.getDocumentById<T>(collectionPath, id);
 	}
 
 	async deleteDocument<T>(collectionPath: string, documentId: string): Promise<T> {
-		const currentDoc = this.getDocument<T>(collectionPath, documentId);
+		const currentDoc = this.getDocumentById<T>(collectionPath, documentId);
 		const docRef = this.getDocRef(collectionPath, documentId);
 		await deleteDoc(docRef);
 		return currentDoc;
 	}
 
 	async updateDocument(collectionPath: string, documentId: string, payload: any, mergePayload = true): Promise<any> {
-		payload.updatedDate = new Date().toISOString();
+		payload.updatedDate = serverTimestamp();
 		payload.updatedBy = 'keithstric@gmail.com';
 		if (mergePayload) {
 			const docRef = this.getDocRef(collectionPath, documentId);
 			await updateDoc(docRef, payload);
-			return await this.getDocument(collectionPath, documentId);
+			return await this.getDocumentById(collectionPath, documentId);
 		} else {
 			return await this.addDocument(collectionPath, payload, documentId);
 		}
