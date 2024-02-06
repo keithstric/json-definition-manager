@@ -1,6 +1,19 @@
+@import 'src/scss/variables';
+
 .site-sidebar-container {
+	height: 100%;
+	background-color: $primary;
 
 	.btn {
+		color: $secondary;
 		margin-bottom: 5px;
+
+		&.active {
+			color: $accent;
+			border-width: 0;
+			border-bottom-width: 1px;
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+		}
 	}
 }

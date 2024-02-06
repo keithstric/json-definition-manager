@@ -38,10 +38,6 @@ export class FirestoreService {
 	}
 
 	async getDocumentsByQuery<T>(collectionPath: string, whereField: string, whereCondition: '==', whereValue: string): Promise<T[]> {
-		console.log('getDocumentsByQuery, collectionPath=', collectionPath);
-		console.log('getDocumentsByQuery, whereField=', whereField);
-		console.log('getDocumentsByQuery, whereCondition=', whereCondition);
-		console.log('getDocumentsByQuery, whereValue=', whereValue);
 		const returnVal = [];
 		const collection = this.getCollection(collectionPath);
 		const q = query(collection, where(whereField, whereCondition, whereValue));

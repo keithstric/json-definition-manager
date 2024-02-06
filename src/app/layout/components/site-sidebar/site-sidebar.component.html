@@ -1,19 +1,19 @@
 <div class="site-sidebar-container flex-column align-items-center">
 	<a [routerLink]="['/']"><button
 		class="btn"
-		[ngClass]="{'primary': currentRoutePath === 'home', 'secondary': currentRoutePath !== 'home'}"
+		[ngClass]="{'active': currentRoutePath === 'home', 'secondary': currentRoutePath !== 'home'}"
 		title="Home">
 		<i class="fa-solid fa-house fa-lg"></i>
 	</button></a>
 	<a [routerLink]="['/schemas']"><button
 		class="btn"
-		[ngClass]="{'primary': currentRoutePath === 'schema', 'secondary': currentRoutePath !== 'schema'}"
+		[ngClass]="{'active': currentRoutePath === 'schema', 'secondary': currentRoutePath !== 'schema'}"
 		title="Schemas">
 		<i class="fa-solid fa-folder-tree fa-lg"></i>
 	</button></a>
 	<a [routerLink]="['/mappings']"><button
 		class="btn"
-		[ngClass]="{'primary': currentRoutePath === 'mapping', 'secondary': currentRoutePath !== 'mapping'}"
+		[ngClass]="{'active': currentRoutePath === 'mapping', 'secondary': currentRoutePath !== 'mapping'}"
 		title="Mappings">
 		<i class="fa-solid fa-sitemap fa-lg"></i>
 	</button></a>

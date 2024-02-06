@@ -56,37 +56,39 @@
   @include font-size(12px);
   font-family: Roboto, "Helvetica Neue", sans-serif;
   height: 100vh;
+	width: 100vw;
   background: #f1f1f1;
   overflow: hidden;
 
-	.site-sidebar {
-		width: 64px;
-		border-right: 2px solid $primary;
+	.site-header {
+		height: 64px;
 	}
 
-	.site-right-content {
-		width: 100%;
+	.site-content {
+		height: calc(100vh - 64px);
+		width: 100vw;
 
-		.site-header {
-			height: 64px;
+		&.with-footer {
+			height: calc((100vh - 64px) - 64px);
 		}
 
-		.site-footer {
-			height: 64px;
+		.site-sidebar {
+			width: 64px;
+			border-right: 2px solid $primary;
 		}
 
-		.site-content {
-			height: calc(100vh - 64px);
+		.site-content-container {
+			padding: 1rem;
 			overflow: auto;
 
-			&.with-footer {
-				height: calc((100vh - 64px) - 64px);
+			&.with-sidebar {
+				width: calc(100vw - 64px);
 			}
-
-			.site-content-container {
-				width: 100%;
-			}
-		;
 		}
 	}
+
+	.site-footer {
+		height: 64px;
+	}
+
 }
