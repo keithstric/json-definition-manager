@@ -4,10 +4,12 @@ import {LayoutModule} from '@layout/layout.module';
 import {MappingRoutingModule} from '@modules/mapping/mapping-routing.module';
 import {SharedModule} from '@shared/shared.module';
 import { MappingComponent } from './mapping.component';
+import { EditMappingComponent } from './pages/edit-mapping/edit-mapping.component';
 
 @NgModule({
   declarations: [
-    MappingComponent
+    MappingComponent,
+    EditMappingComponent
   ],
   imports: [
     CommonModule,

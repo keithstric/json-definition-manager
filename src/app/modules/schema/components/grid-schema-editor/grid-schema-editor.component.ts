@@ -1,6 +1,7 @@
 import {NgForOf} from '@angular/common';
 import {Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {FormsModule} from '@angular/forms';
+import {WhereQuery} from '@core/interfaces/firestore.interface';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
 import {ISchema} from '@shared/interfaces/map.interface';
 import { ICellEditorParams } from 'ag-grid-community';
@@ -33,7 +34,12 @@ export class GridSchemaEditorComponent {
 
 	async searchSchemas(evt: InputEvent) {
 		console.log('searchSchemas, evt=', evt);
-		const results = await this.firestore.getDocumentsByQuery<ISchema>('schemas', 'name', '==', (evt.target as any).value);
+		const whereQuery: WhereQuery = {
+			fieldName: 'name',
+			condition: '==',
+			value: (evt.target as any).value
+		};
+		const results = await this.firestore.getDocumentsByQuery<ISchema>('schemas', whereQuery);
 		console.log('results=', results);
 		this.selectItems = results.map(doc => {
 			return {value: doc.id, label: doc.name};

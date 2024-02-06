@@ -1,56 +1,33 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
-import {IMap, IPropertyDefinition, ISchema} from '@shared/interfaces/map.interface';
-import {Subscription} from 'rxjs';
+import {IMap} from '@shared/interfaces/map.interface';
 
 @Component({
   selector: 'app-mapping',
   templateUrl: './mapping.component.html',
   styleUrls: ['./mapping.component.scss']
 })
-export class MappingComponent implements OnInit, OnDestroy {
-	mappingDoc: IMap;
-	currentMapping: IMap;
-	sourceSchema: ISchema;
-	targetSchema: ISchema;
-	sourceDefinition: IPropertyDefinition[];
-	targetDefinition: IPropertyDefinition[];
-	routeSub: Subscription;
-	docId: string;
+export class MappingComponent implements OnInit {
+	mappings: IMap[] = [];
 
-	constructor(
-		private _route: ActivatedRoute,
-		private firestore: FirestoreService,
-	) {}
+	constructor(private firestore: FirestoreService) {}
 
 	async ngOnInit() {
-		this.routeSub = this._route.params.subscribe(async (params) => {
-			this.docId = params.mappingId;
-			this.mappingDoc = await this.firestore.getDocumentById<IMap>('mappings', this.docId);
-			if (this.mappingDoc) {
-				this.currentMapping = this.mappingDoc;
-				this.sourceSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.sourceSchemaId);
-				this.targetSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.targetSchemaId);
-				this.sourceDefinition = this.sourceSchema.definition;
-				this.targetDefinition = this.targetSchema.definition;
-			}
-		});
+		const mappings = await this.firestore.getAllDocuments<IMap>('mappings');
+		this.mappings = mappings
+			.map((mapping: any) => {
+				if(mapping.createdDate && typeof mapping.createdDate === 'object') {
+					mapping.createdDate = new Date(mapping.createdDate.seconds*1000).toISOString();
+				}
+				if (mapping.updatedDate && typeof mapping.updatedDate === 'object') {
+					mapping.updatedDate = new Date(mapping.updatedDate.seconds*1000).toISOString();
+				}
+				return mapping;
+			})
+			.sort((a,b) => {
+				const aDate = new Date(a.createdDate);
+				const bDate = new Date(b.createdDate);
+				return aDate > bDate ? -1 : aDate < bDate ? 1 : 0;
+			});
 	}
-
-	ngOnDestroy() {
-		this.routeSub.unsubscribe();
-	}
-
-	async saveMapping() {}
-
-	revertChanges() {}
-
-	updateCurrentMapping() {}
-
-	createPropertyMapping(sourceProperty: string, targetProperty: string) {}
-
-	deletePropertyMapping(propertyMappingId: string) {}
-
-	updatePropertyMapping(sourceProperty: string, targetProperty: string) {}
 }

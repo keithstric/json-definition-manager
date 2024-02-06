@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
-import users from '@modules/users.json';
-import {IMap, ISchema} from '@shared/interfaces/map.interface';
+import {ISchema} from '@shared/interfaces/map.interface';
 
 @Component({
   selector: 'app-schema',
@@ -9,7 +8,7 @@ import {IMap, ISchema} from '@shared/interfaces/map.interface';
   styleUrls: ['./schema.component.scss']
 })
 export class SchemaComponent implements OnInit, OnDestroy {
-	schemas: ISchema[];
+	schemas: ISchema[] = [];
 
 	constructor(
 		private firestore: FirestoreService,
@@ -35,9 +34,4 @@ export class SchemaComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy() {}
-
-	getUserEmail(userId: string) {
-		const user = users.find(user => user.id === userId);
-		return user.emailAddress;
-	}
 }

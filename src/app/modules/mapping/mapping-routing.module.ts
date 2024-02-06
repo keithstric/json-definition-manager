@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {MappingComponent} from '@modules/mapping/mapping.component';
+import {EditMappingComponent} from '@modules/mapping/pages/edit-mapping/edit-mapping.component';
 
 export const mappingRoutes: Routes = [
 	{
@@ -8,7 +9,7 @@ export const mappingRoutes: Routes = [
 		component: MappingComponent
 	}, {
 		path: ':mappingId',
-		component: MappingComponent
+		component: EditMappingComponent
 	}
 ];
 
