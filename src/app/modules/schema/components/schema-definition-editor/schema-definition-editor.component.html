@@ -1,0 +1,32 @@
+<div class="schema-definition-editor-container flex-column">
+	<app-collapse-card title="Schema JSON Editor" [isCollapsed]="false">
+		<div content class="schema-editor-container">
+			<div class="schema-editor flex-row">
+				<json-editor #treeEditor
+										 [data]="schema"
+										 [options]="getEditorOptions('tree')">
+				</json-editor>
+				<json-editor #codeEditor
+										 [data]="schema"
+										 [options]="getEditorOptions('code')"
+										 (change)="onChangeCode($event, codeEditor)">
+				</json-editor>
+			</div>
+		</div>
+	</app-collapse-card>
+
+	<app-collapse-card title="Schema Definition" [isCollapsed]="false">
+		<div #gridContainer content class="definition-container flex-column">
+			<div class="actions flex-row align-items-center">
+				<button class="btn btn-sm btn-primary" (click)="_addRow()">Add Row</button>
+			</div>
+			<ag-grid-angular
+				[style]="gridStyle"
+				class="ag-theme-quartz"
+				[rowData]="definition"
+				(gridReady)="_onGridReady($event)"
+				(rowEditingStopped)="_onRowEditingStopped($event)">
+			</ag-grid-angular>
+		</div>
+	</app-collapse-card>
+</div>

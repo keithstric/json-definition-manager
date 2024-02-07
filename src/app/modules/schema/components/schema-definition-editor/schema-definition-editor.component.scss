@@ -1,0 +1,18 @@
+:host {
+	flex-grow: 1;
+}
+
+.actions {
+	padding: 5px 0;
+}
+
+:host ::ng-deep json-editor,
+:host ::ng-deep json-editor .jsoneditor,
+:host ::ng-deep json-editor > div,
+:host ::ng-deep json-editor jsoneditor-outer {
+	height: 600px;
+	margin-bottom: 30px;
+}
+json-editor {
+	flex-grow: 1;
+}
