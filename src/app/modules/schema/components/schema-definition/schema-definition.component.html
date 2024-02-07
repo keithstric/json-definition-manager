@@ -5,6 +5,7 @@
 	<ag-grid-angular
 		[style]="gridStyle"
 		class="ag-theme-quartz"
+		[rowData]="definition"
 		(gridReady)="_onGridReady($event)"
 		(rowEditingStopped)="_onRowEditingStopped($event)">
 	</ag-grid-angular>

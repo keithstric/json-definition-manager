@@ -2,16 +2,17 @@
 
 .schema-container {
 
-	.schema-editor {
+	/*.schema-editor {
 		box-sizing: border-box;
 		padding: 10px;
 		app-schema-editor {
 			flex-grow: 1;
 		}
-	}
+	}*/
 
 	.action-container {
-		margin-bottom: 1rem;
+		padding: 5px 0;
+
 		.btn {
 			margin-right: 0.25rem;
 			border: 1px solid $primary;

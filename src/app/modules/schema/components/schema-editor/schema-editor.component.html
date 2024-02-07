@@ -1,10 +1,11 @@
 <div class="schema-editor-container">
 	<div class="schema-editor flex-row">
 		<json-editor #treeEditor
-								 [options]="getEditorOptions('tree')"
-								 (change)="onChange($event, treeEditor)">
+								 [data]="schema"
+								 [options]="getEditorOptions('tree')">
 		</json-editor>
 		<json-editor #codeEditor
+								 [data]="schema"
 								 [options]="getEditorOptions('code')"
 								 (change)="onChange($event, codeEditor)">
 		</json-editor>

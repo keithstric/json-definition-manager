@@ -19,28 +19,15 @@ import {Subscription} from 'rxjs';
   templateUrl: './schema-definition.component.html',
   styleUrls: ['./schema-definition.component.scss']
 })
-export class SchemaDefinitionComponent implements OnInit, OnChanges {
-	@Input() initialDefinition: any[] = [];
+export class SchemaDefinitionComponent {
+	@Input() definition: any[] = [];
 	@Output() dataChanged: EventEmitter<any> = new EventEmitter<any>();
-	currentDefinition: any[];
 	gridStyle: string;
 	gridApi: GridApi;
 	gridIsReady: boolean = false;
 
 	@ViewChild(AgGridAngular) grid: AgGridAngular;
 	@ViewChild('gridContainer') gridContainer: ElementRef;
-
-	ngOnInit() {
-		// Gotta use the JSON.parse(JSON.stringify) trick to ensure currentDefinition isn't an instance of definition
-		this.currentDefinition = JSON.parse(JSON.stringify(this.initialDefinition));
-	}
-
-	ngOnChanges(changes: SimpleChanges) {
-		if (changes.initialDefinition && !changes.initialDefinition.firstChange && this.gridIsReady) {
-			this.gridApi.setGridOption('rowData', changes.initialDefinition.currentValue);
-			this.dataChanged.emit(this.gridApi.getGridOption('rowData'));
-		}
-	}
 
 	_onGridReady(evt: GridReadyEvent) {
 		this.gridApi = evt.api;
@@ -49,39 +36,35 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 		this._setupGrid();
 	}
 
-	private async _setupGrid() {
-		const firstItem = this.currentDefinition?.length ? this.currentDefinition[0] : null;
-		let colDefs: ColDef[] = [];
-		if (firstItem) {
-			colDefs = Object.keys(firstItem).map(key => {
-				return this._getColumnDefinition(key);
-			});
-		}
-		this.gridApi.setGridOption('rowData', this.currentDefinition.slice());
+	private _setupGrid() {
+		const colDefs: ColDef[] = this._getColumnDefs();
 		this.gridApi.setGridOption('columnDefs', colDefs);
 		this.gridApi.setGridOption('defaultColDef', {editable: true});
 		this.gridApi.setGridOption('editType', 'fullRow');
 		this.gridIsReady = true;
 	}
 
-	private _getColumnDefinition(key: string) {
-		let colDef = {
-			field: key.toLowerCase(),
-			sortable: key === 'path',
-			cellEditor: undefined,
-			cellEditorParams: undefined,
-		};
-		switch (key) {
-			case 'type':
-				colDef.cellEditor = 'agSelectCellEditor';
-				colDef.cellEditorParams = this._getTypeEditorVals();
-				break;
-			case 'schema':
-				colDef.cellEditor = GridSchemaEditorComponent;
-				colDef.cellEditorParams = {key};
-				break;
-		}
-		return colDef;
+	private _getColumnDefs() {
+		const keys = ['path', 'description', 'type', 'schema', 'required', 'comments'];
+		return keys.map(key => {
+			let colDef = {
+				field: key.toLowerCase(),
+				sortable: key === 'path',
+				cellEditor: undefined,
+				cellEditorParams: undefined,
+			};
+			switch (key) {
+				case 'type':
+					colDef.cellEditor = 'agSelectCellEditor';
+					colDef.cellEditorParams = this._getTypeEditorVals();
+					break;
+				case 'schema':
+					colDef.cellEditor = GridSchemaEditorComponent;
+					colDef.cellEditorParams = {key};
+					break;
+			}
+			return colDef;
+		});
 	}
 
 	private _getTypeEditorVals () {
@@ -102,10 +85,6 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 		]};
 	}
 
-	private async _getSchemaEditorVals() {
-
-	}
-
 	_addRow() {
 		if (this.gridApi.getGridOption('rowData')?.length) {
 			let newFgObj = {};
@@ -114,13 +93,12 @@ export class SchemaDefinitionComponent implements OnInit, OnChanges {
 			});
 			const newRowDataValue = [...JSON.parse(JSON.stringify(this.gridApi.getGridOption('rowData'))), newFgObj];
 			this.gridApi.setGridOption('rowData', newRowDataValue);
-			this.currentDefinition = this.gridApi.getGridOption('rowData');
-			this.dataChanged.emit(newRowDataValue);
+			this.definition = this.gridApi.getGridOption('rowData');
 		}
 	}
 
 	_onRowEditingStopped(evt: RowEditingStoppedEvent) {
-		this.currentDefinition = JSON.parse(JSON.stringify(this.gridApi.getGridOption('rowData')));
+		this.definition = JSON.parse(JSON.stringify(this.gridApi.getGridOption('rowData')));
 		this.dataChanged.emit(this.gridApi.getGridOption('rowData'));
 	}
 }
