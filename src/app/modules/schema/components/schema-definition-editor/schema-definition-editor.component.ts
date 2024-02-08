@@ -29,22 +29,25 @@ export class SchemaDefinitionEditorComponent implements OnInit {
 	@ViewChild('gridContainer') gridContainer: ElementRef;
 
 	ngOnInit() {
+		this._setOnTextChangeListener();
+	}
+
+	/****** CODE EDITOR ******/
+	private _setOnTextChangeListener() {
 		this.onTextChangeSubj.pipe(
-			debounceTime(1200),
+			debounceTime(1500),
 			distinctUntilChanged()
 		).subscribe(newSchema => {
 			try {
 				const newValue = this.treeEditor.get();
-				this.codeEditor.set(newValue);
 				const newDefinition = this._convertSchemaToDefinition();
-				this.onChange(newValue, newDefinition);
+				this._onChange(newValue, newDefinition);
 			}catch (e) {
 				console.error(e);
 			}
 		});
 	}
 
-	/****** CODE EDITOR ******/
 	/**
 	 * Get the editor options based on the provided mode
 	 * @param mode
@@ -57,7 +60,7 @@ export class SchemaDefinitionEditorComponent implements OnInit {
 		options.mainMenuBar = true;
 		options.enableSort = true;
 		// @ts-ignore
-		options.onChangeText = ['tree', 'view', 'form'].includes(mode) ? this.onChangeText.bind(this) : undefined;
+		options.onChangeText = ['tree', 'view', 'form'].includes(mode) ? this._onChangeText.bind(this) : undefined;
 		return options;
 	}
 
@@ -69,19 +72,20 @@ export class SchemaDefinitionEditorComponent implements OnInit {
 	onChangeCode(evt: any, editor: JsonEditorComponent) {
 		if (evt instanceof Event) {
 			const newValue = this.codeEditor.get();
-			this.treeEditor.set(newValue);
 			const newDefinition = this._convertSchemaToDefinition();
-			this.onChange(newValue, newDefinition);
+			this._onChange(newValue, newDefinition);
 		}
 	}
 
-	onChangeText() {
+	private _onChangeText() {
 		this.onTextChangeSubj.next(this.treeEditor.get());
 	}
 
-	onChange(newSchema: any, newDefinition: DefinitionItem[]) {
+	private _onChange(newSchema: any, newDefinition: DefinitionItem[]) {
 		this.schema = newSchema;
 		this.definition = newDefinition;
+		this.treeEditor.set(newSchema);
+		this.codeEditor.set(newSchema);
 		this.treeEditor.expandAll();
 		this.dataChanged.emit({schema: newSchema, definition: newDefinition});
 	}
@@ -204,10 +208,9 @@ export class SchemaDefinitionEditorComponent implements OnInit {
 	}
 
 	_onRowEditingStopped(evt: RowEditingStoppedEvent) {
-		// this.definition = JSON.parse(JSON.stringify(this.gridApi.getGridOption('rowData')));
 		const newDefinition = JSON.parse(JSON.stringify(this.gridApi.getGridOption('rowData')));
 		const newSchema = this._convertDefinitionToSchema();
-		this.onChange(newSchema, newDefinition);
+		this._onChange(newSchema, newDefinition);
 	}
 
 	private _convertDefinitionToSchema() {
