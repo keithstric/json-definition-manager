@@ -2,16 +2,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
 import {NotificationService} from '@core/services/notification/notification.service';
-import {IMap, IPropertyDefinition, ISchema} from '@shared/interfaces/map.interface';
+import {IFieldMappingProperty, IMap, IPropertyDefinition, ISchema} from '@shared/interfaces/map.interface';
 import {JsonEditorOptions} from 'ang-jsoneditor';
 import {Subscription} from 'rxjs';
-
-export interface MappingProperty {
-	path: string;
-	name: string;
-	fieldType: string;
-	children?: MappingProperty[];
-}
 
 @Component({
   selector: 'app-edit-mapping',
@@ -27,11 +20,11 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	sourceSchemaId: string;
 	sourceSchemaDoc: ISchema;
 	sourceSchema: any;
-	sourceMappingFields: MappingProperty[] = [];
+	sourceMappingFields: IFieldMappingProperty[] = [];
 	targetSchemaId: string;
 	targetSchemaDoc: ISchema;
 	targetSchema: any;
-	targetMappingFields: MappingProperty[] = [];
+	targetMappingFields: IFieldMappingProperty[] = [];
 	sourceDefinition: IPropertyDefinition[];
 	targetDefinition: IPropertyDefinition[];
 	routeSub: Subscription;
@@ -125,7 +118,7 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		return mappingFields;
 	}
 
-	_expandCollapse(evt: Event, field: MappingProperty) {
+	_expandCollapse(evt: Event, field: IFieldMappingProperty) {
 		evt.stopPropagation();
 		if (field.children) {
 			const fieldPath = field.path;

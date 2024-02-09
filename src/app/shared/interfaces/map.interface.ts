@@ -10,6 +10,11 @@ export interface IMap extends IDbDoc {
 	targetSchemaId: string;
 	sourceSchemaId: string;
 	collaborators: string[];
+	mapping: IFieldMapping[];
+}
+export interface IFieldMapping {
+	 sourceField: IFieldMappingProperty;
+	 targetField: IFieldMappingProperty;
 }
 export interface ISchema extends IDbDoc {
 	name: string;
@@ -24,4 +29,10 @@ export interface IPropertyDefinition {
 	childSchema?: string;
 	required: boolean;
 	comments: string;
+}
+export interface IFieldMappingProperty {
+	path: string;
+	name: string;
+	fieldType: string;
+	children?: IFieldMappingProperty[];
 }

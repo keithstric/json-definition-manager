@@ -53,62 +53,59 @@
 	<div class="mapping-container flex-row justify-content-between">
 		<!-- Source Schema container -->
 		<div class="source-schema flex-column">
-			<div class="schema-actions flex-row">
-				<select [(ngModel)]="sourceSchemaId" class="form-select form-select-sm" (input)="_onSchemaSelect($event, 'source')">
-					<option [value]="undefined">Select a Source Schema</option>
-					<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
-				</select>
-				<a
-					[routerLink]="['/schemas', sourceSchemaId]"
-					[class.disabled]="!sourceSchemaId"
-					target="_blank"
-					title="Edit the source schema">
-					<button class="btn btn-small" [disabled]="!sourceSchemaId">
-						<i class="fa-regular fa-pen-to-square"></i>
-					</button>
-				</a>
-			</div>
-			<div *ngIf="sourceSchemaDoc" class="source-json">
-				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: sourceMappingFields}"></ng-container>
-			</div>
+			<ng-container [ngTemplateOutlet]="schemaContainer" [ngTemplateOutletContext]="{$implicit: 'source'}"></ng-container>
 		</div>
 		<!-- Target schema container -->
 		<div class="target-schema flex-column">
-			<div class="schema-actions flex-row">
-				<select [(ngModel)]="targetSchemaId" class="form-select form-select-sm" (input)="_onSchemaSelect($event, 'target')">
-					<option [value]="undefined">Select a Target Schema</option>
-					<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
-				</select>
-				<a
-					[routerLink]="['/schemas', targetSchemaId]"
-					[class.disabled]="!targetSchemaId"
-					target="_blank"
-					title="Edit the target schema">
-					<button class="btn btn-small" [disabled]="!targetSchemaId">
-						<i class="fa-regular fa-pen-to-square"></i>
-					</button>
-				</a>
-			</div>
-			<div *ngIf="targetSchemaDoc" class="source-json">
-				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: targetMappingFields}"></ng-container>
-			</div>
+			<ng-container [ngTemplateOutlet]="schemaContainer" [ngTemplateOutletContext]="{$implicit: 'target'}"></ng-container>
 		</div>
 		<!-- Mapping details container -->
 		<div class="mapping flex-column">
 			<div class="schema-actions flex-row justify-content-end align-items-center">
 				<button class="btn btn-sm" title="Delete Mapping"><i class="fa-regular fa-trash-can"></i></button>
 			</div>
-			<div class="source-mapping flex-column"></div>
-			<div class="target-mapping flex-column"></div>
+			<div class="source-mapping flex-column">
+
+			</div>
+			<div class="target-mapping flex-column">
+
+			</div>
 		</div>
 	</div>
 </div>
+
+<!-- Template for the source and target schemas -->
+<ng-template #schemaContainer let-schemaType>
+	<div class="schema-actions flex-row">
+		<select
+			[ngModel]="schemaType === 'source' ? sourceSchemaId : targetSchemaId"
+			(ngModelChange)="schemaType === 'source' ? sourceSchemaId = $event : targetSchemaId = $event"
+			class="form-select form-select-sm"
+			(input)="_onSchemaSelect($event, schemaType)">
+			<option [value]="undefined">Select a {{schemaType | titlecase}} Schema</option>
+			<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
+		</select>
+		<a
+			[routerLink]="['/schemas', schemaType === 'source' ? sourceSchemaId : targetSchemaId]"
+			[class.disabled]="schemaType === 'source' ? !sourceSchemaId : !targetSchemaId"
+			target="_blank"
+			title="Edit the {{schemaType | titlecase}} schema">
+			<button class="btn btn-small" [disabled]="schemaType === 'source' ? !sourceSchemaId : !targetSchemaId">
+				<i class="fa-regular fa-pen-to-square"></i>
+			</button>
+		</a>
+	</div>
+	<div *ngIf="sourceSchemaDoc" [class.source-json]="schemaType === 'source'" [class.target-json]="schemaType === 'target'">
+		<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: schemaType === 'source' ? sourceMappingFields : targetMappingFields}"></ng-container>
+	</div>
+</ng-template>
 
 <!-- Template used for displaying the nested schema property list -->
 <ng-template #schemaPropertyList let-mappingFields>
 	<ul class="list-group">
 		<li
 			*ngFor="let field of mappingFields"
+			[id]="field.path + '-' + field.fieldType"
 			[class.has-children]="field.children?.length"
 			class="list-group-item flex-column">
 			<div
@@ -120,10 +117,17 @@
 					 class="fa-solid">
 				</i>
 				<span>{{field.name}} ({{field.fieldType | uppercase}})</span>
+				<span *ngIf="!field.children?.length" class="spacer"></span>
+				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Show Field Mapping">
+					<i class="fa-solid fa-arrow-right-arrow-left"></i>
+				</button>
+				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Create Field Mapping">
+					<i class="fa-solid fa-share-nodes"></i>
+				</button>
 			</div>
-			<div class="list-group-item child-item collapse" [id]="field.path">
+			<div *ngIf="field.children?.length" class="list-group-item child-item collapse" [id]="field.path">
 				<!-- Pass along the children to the schemaPropertyList template as its mappingFields -->
-				<ng-container *ngIf="field.children?.length" [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children}"></ng-container>
+				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children}"></ng-container>
 			</div>
 		</li>
 	</ul>
