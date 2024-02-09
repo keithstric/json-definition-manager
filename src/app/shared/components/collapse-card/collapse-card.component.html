@@ -1,5 +1,6 @@
 <div class="card">
 	<div
+		*ngIf="!hideHeader"
 		class="collapse-header card-header flex-row align-items-center justify-content-between"
 		(click)="isCollapsed = !isCollapsed">
 		{{title}}

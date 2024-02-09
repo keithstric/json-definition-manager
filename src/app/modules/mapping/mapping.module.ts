@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {LayoutModule} from '@layout/layout.module';
 import {MappingRoutingModule} from '@modules/mapping/mapping-routing.module';
 import {SharedModule} from '@shared/shared.module';
+import {NgJsonEditorModule} from 'ang-jsoneditor';
 import { MappingComponent } from './mapping.component';
 import { EditMappingComponent } from './pages/edit-mapping/edit-mapping.component';
 
@@ -11,11 +12,12 @@ import { EditMappingComponent } from './pages/edit-mapping/edit-mapping.componen
     MappingComponent,
     EditMappingComponent
   ],
-  imports: [
-    CommonModule,
+	imports: [
+		CommonModule,
 		LayoutModule,
 		MappingRoutingModule,
 		SharedModule,
-  ]
+		NgJsonEditorModule,
+	]
 })
 export class MappingModule { }

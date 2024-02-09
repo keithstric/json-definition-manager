@@ -1,11 +1,130 @@
-<div class="edit-mapping-container flex-row justify-content-between">
-	<div class="source-schema flex-column"></div>
-	<div class="target-schema flex-column"></div>
-	<div class="mapping flex-column">
-		<div class="mapping-actions flex-row justify-content-end align-items-center">
-			<button class="btn" title="Delete Mapping"><i class="fa-regular fa-trash-can"></i></button>
+<div class="edit-mapping-container flex-column">
+	<!-- Action bar -->
+	<div class="action-container flex-row">
+		<button
+			class="btn btn-sm btn-primary card-link"
+			(click)="saveMapping()">
+			Save
+		</button>
+		<button class="btn btn-sm card-link" (click)="revertChanges()">Revert to Original</button>
+	</div>
+	<!-- Form for name and description -->
+	<div class="form-container flex-row justify-content-between">
+		<div class="form-group">
+			<label for="sourceSchemaName">Mapping Name</label>
+			<input
+				[(ngModel)]="mappingName"
+				type="text"
+				class="form-control"
+				id="sourceSchemaName"
+				aria-describedby="sourceSchemaNameHelp"
+				placeholder="Enter the name of your mapping"
+				required
+				minlength="4"
+				#mappingNameFld = "ngModel">
+			<small
+				*ngIf="!mappingNameFld.invalid"
+				id="mappingNameHelp"
+				class="form-text text-muted">
+				Be sure to define a useful name.
+			</small>
+			<small
+				*ngIf="mappingNameFld.invalid"
+				id="mappingNameHelp"
+				class="form-text text-muted error-text">
+				Mapping Name is required and must be at least 4 characters in length
+			</small>
 		</div>
-		<div class="source-mapping flex-row"></div>
-		<div class="target-mapping flex-row"></div>
+		<div class="form-group">
+			<label for="mappingDesc">Source Schema Description</label>
+			<textarea
+				[(ngModel)]="mappingDesc"
+				type="text"
+				class="form-control"
+				id="mappingDesc"
+				aria-describedby="mappingDescHelp"
+				placeholder="Enter a description for your schema">
+					</textarea>
+			<small id="mappingDescHelp" class="form-text text-muted">Define a description for this mapping.</small>
+		</div>
+	</div>
+
+	<!-- Mapping container for creating the mapping -->
+	<div class="mapping-container flex-row justify-content-between">
+		<!-- Source Schema container -->
+		<div class="source-schema flex-column">
+			<div class="schema-actions flex-row">
+				<select [(ngModel)]="sourceSchemaId" class="form-select form-select-sm" (input)="_onSchemaSelect($event, 'source')">
+					<option [value]="undefined">Select a Source Schema</option>
+					<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
+				</select>
+				<a
+					[routerLink]="['/schemas', sourceSchemaId]"
+					[class.disabled]="!sourceSchemaId"
+					target="_blank"
+					title="Edit the source schema">
+					<button class="btn btn-small" [disabled]="!sourceSchemaId">
+						<i class="fa-regular fa-pen-to-square"></i>
+					</button>
+				</a>
+			</div>
+			<div *ngIf="sourceSchemaDoc" class="source-json">
+				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: sourceMappingFields}"></ng-container>
+			</div>
+		</div>
+		<!-- Target schema container -->
+		<div class="target-schema flex-column">
+			<div class="schema-actions flex-row">
+				<select [(ngModel)]="targetSchemaId" class="form-select form-select-sm" (input)="_onSchemaSelect($event, 'target')">
+					<option [value]="undefined">Select a Target Schema</option>
+					<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
+				</select>
+				<a
+					[routerLink]="['/schemas', targetSchemaId]"
+					[class.disabled]="!targetSchemaId"
+					target="_blank"
+					title="Edit the target schema">
+					<button class="btn btn-small" [disabled]="!targetSchemaId">
+						<i class="fa-regular fa-pen-to-square"></i>
+					</button>
+				</a>
+			</div>
+			<div *ngIf="targetSchemaDoc" class="source-json">
+				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: targetMappingFields}"></ng-container>
+			</div>
+		</div>
+		<!-- Mapping details container -->
+		<div class="mapping flex-column">
+			<div class="schema-actions flex-row justify-content-end align-items-center">
+				<button class="btn btn-sm" title="Delete Mapping"><i class="fa-regular fa-trash-can"></i></button>
+			</div>
+			<div class="source-mapping flex-column"></div>
+			<div class="target-mapping flex-column"></div>
+		</div>
 	</div>
 </div>
+
+<!-- Template used for displaying the nested schema property list -->
+<ng-template #schemaPropertyList let-mappingFields>
+	<ul class="list-group">
+		<li
+			*ngFor="let field of mappingFields"
+			[class.has-children]="field.children?.length"
+			class="list-group-item flex-column">
+			<div
+				class="flex-row mapping-field-title align-items-center"
+				(click)="_expandCollapse($event, field)">
+				<i *ngIf="field.children?.length"
+					 [class.fa-caret-right]="!expandedItems.includes(field.path)"
+					 [class.fa-caret-down]="expandedItems.includes(field.path)"
+					 class="fa-solid">
+				</i>
+				<span>{{field.name}} ({{field.fieldType | uppercase}})</span>
+			</div>
+			<div class="list-group-item child-item collapse" [id]="field.path">
+				<!-- Pass along the children to the schemaPropertyList template as its mappingFields -->
+				<ng-container *ngIf="field.children?.length" [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children}"></ng-container>
+			</div>
+		</li>
+	</ul>
+</ng-template>

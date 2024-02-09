@@ -8,6 +8,7 @@ import {Component, Input} from '@angular/core';
 export class CollapseCardComponent {
 	@Input() title: string = 'Change Me!';
 	@Input() isCollapsed: boolean = true;
+	@Input() hideHeader: boolean = false;
 
 	/**
 	 * Toggle collapse element open or closed

@@ -1,1 +1,101 @@
+@import 'src/scss/variables';
 
+.edit-mapping-container {
+	height: 100%;
+
+	.action-container {
+		padding: 5px 0;
+		margin-bottom: 5px;
+
+		.btn {
+			margin-right: 0.25rem;
+			border: 1px solid $primary;
+		}
+	}
+
+	.form-container {
+		.form-group {
+			flex-basis: 0;
+			flex-grow: 1;
+
+			&:last-child {
+				margin-left: 10px;
+			}
+
+			.error-text {
+				color: red !important;
+			}
+		}
+	}
+
+	.mapping-container {
+		height: 100%;
+
+		.schema-actions {
+			border-bottom: 1px solid #afafaf;
+			padding: 5px;
+
+			.btn {
+				margin-left: 3px;
+			}
+
+			a {
+				cursor: pointer;
+
+				&.disabled {
+					pointer-events: none;
+					cursor: default;
+				}
+			}
+		}
+
+		.list-group {
+			.list-group-item {
+				padding-right: 3px;
+				padding-left: 3px;
+
+				&.has-children {
+					&:hover {
+						cursor: pointer;
+					}
+				}
+
+				.mapping-field-title {
+					i {
+						margin-right: 5px;
+					}
+				}
+
+				.child-item {
+					border-width: 0;
+					padding-right: 3px;
+
+					.list-group, list-group-item {
+						border-width: 0;
+					}
+				}
+			}
+		}
+
+		.source-schema {
+			border: 1px solid #afafaf;
+			flex-grow: 1;
+		}
+
+		.target-schema {
+			border: 1px solid #afafaf;
+			flex-grow: 1;
+			margin-left: 5px;
+		}
+
+		.mapping {
+			border: 1px solid #afafaf;
+			margin-left: 5px;
+			flex-basis: 250px;
+
+			.source-mapping {}
+
+			.target-mapping {}
+		}
+	}
+}

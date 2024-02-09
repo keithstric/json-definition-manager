@@ -15,7 +15,7 @@ export interface ISchema extends IDbDoc {
 	name: string;
 	description: string;
 	schema: any;
-	definition: any;
+	definition: IPropertyDefinition[];
 }
 export interface IPropertyDefinition {
 	path: string;
