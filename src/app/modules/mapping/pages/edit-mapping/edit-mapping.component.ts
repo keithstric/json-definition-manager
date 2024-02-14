@@ -3,7 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
 import {NotificationService} from '@core/services/notification/notification.service';
 import {IFieldMappingProperty, IMap, IPropertyDefinition, ISchema} from '@shared/interfaces/map.interface';
-import {JsonEditorOptions} from 'ang-jsoneditor';
+import _ from 'lodash';
 import {Subscription} from 'rxjs';
 
 @Component({
@@ -21,10 +21,12 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	sourceSchemaDoc: ISchema;
 	sourceSchema: any;
 	sourceMappingFields: IFieldMappingProperty[] = [];
+	sourceFieldMappings: IFieldMappingProperty[] = [];
 	targetSchemaId: string;
 	targetSchemaDoc: ISchema;
 	targetSchema: any;
 	targetMappingFields: IFieldMappingProperty[] = [];
+	targetFieldMappings: IFieldMappingProperty[] = [];
 	sourceDefinition: IPropertyDefinition[];
 	targetDefinition: IPropertyDefinition[];
 	routeSub: Subscription;
@@ -40,13 +42,15 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		await this.fetchSchemas();
 		this.routeSub = this._route.params.subscribe(async (params) => {
 			this.docId = params.mappingId;
-			this.mappingDoc = await this.firestore.getDocumentById<IMap>('mappings', this.docId);
-			if (this.mappingDoc) {
-				this.currentMapping = this.mappingDoc;
-				this.sourceSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.sourceSchemaId);
-				this.targetSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.targetSchemaId);
-				this.sourceDefinition = this.sourceSchema.definition;
-				this.targetDefinition = this.targetSchema.definition;
+			if (this.docId !== 'new') {
+				this.mappingDoc = await this.firestore.getDocumentById<IMap>('mappings', this.docId);
+				if (this.mappingDoc) {
+					this.currentMapping = this.mappingDoc;
+					this.sourceSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.sourceSchemaId);
+					this.targetSchema = await this.firestore.getDocumentById<ISchema>('schemas', this.mappingDoc.targetSchemaId);
+					this.sourceDefinition = this.sourceSchema.definition;
+					this.targetDefinition = this.targetSchema.definition;
+				}
 			}
 		});
 	}
@@ -122,7 +126,6 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		evt.stopPropagation();
 		if (field.children) {
 			const fieldPath = field.path;
-			console.log('_expandCollapse, evt=', evt, fieldPath);
 			const el = document.getElementById(fieldPath);
 			if (el.classList.contains('collapse')) {
 				el.classList.remove('collapse');
@@ -134,8 +137,78 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 				}
 				el.classList.add('collapse');
 			}
-			console.log('_expandCollapse, expandedItems=', this.expandedItems);
 		}
+	}
+
+	_createMapping(field: IFieldMappingProperty, schemaType: 'source' | 'target') {
+		field.mapped = true;
+		field.id = `${field.path}-${field.fieldType}`;
+		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : schemaType === 'target' ? this.targetFieldMappings : undefined;
+		if (fieldMappings) {
+			fieldMappings.push(field);
+		}
+	}
+
+	_addFieldMapping(evt: Event, schemaType: 'source' | 'target') {
+		const el: HTMLSelectElement = evt.target as HTMLSelectElement;
+		const selectedValue = el.value;
+		const mappingFields = schemaType === 'source' ? this.sourceMappingFields : this.targetMappingFields;
+		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : this.targetFieldMappings;
+		const mappingField = this._findMappingField(mappingFields, selectedValue);
+		if (mappingField) {
+			mappingField.mapped = true;
+			mappingField.id = `${mappingField.path}-${mappingField.fieldType}`;
+			fieldMappings.push(mappingField);
+		}
+	}
+
+	_deleteFieldMapping(idx: number, schemaType: 'source' | 'target') {
+		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : this.targetFieldMappings;
+		const fieldMapping = fieldMappings[idx];
+		const mappingFields = schemaType === 'source' ? this.sourceMappingFields : this.targetMappingFields;
+		const mappingField = this._findMappingField(mappingFields, fieldMapping.path);
+		mappingField.mapped = false;
+		fieldMappings.splice(idx, 1);
+	}
+
+	private _findMappingField(mappingFields: IFieldMappingProperty[], path: string) {
+		const pathArr = path.split('.');
+		let rootFieldsIdx: number;
+		let currentMappingField = mappingFields.find((item, idx) => {
+			if (item.path === pathArr[0]) {
+				rootFieldsIdx = idx;
+				return true;
+			}
+			return false
+		});
+		if (pathArr.length > 1) {
+			let nextPath = `${pathArr[0]}`;
+			let fieldPath = `${rootFieldsIdx}.children`;
+			let pathIdx = 1;
+			while (pathIdx < pathArr.length) {
+				nextPath = `${nextPath}.${pathArr[pathIdx]}`
+				currentMappingField = currentMappingField.children.find((item, childIdx) => {
+					if (item.path === nextPath) {
+						if (pathIdx < pathArr.length - 1) {
+							fieldPath = `${fieldPath}.${childIdx}.children`;
+						}else{
+							fieldPath = `${fieldPath}.${childIdx}`;
+							return false;
+						}
+						return true;
+					}
+					return false;
+				});
+				pathIdx++;
+			}
+			return _.get(mappingFields, fieldPath);
+		} else {
+			return currentMappingField;
+		}
+	}
+
+	_showMapping(field: IFieldMappingProperty, schemaType: 'source' | 'target') {
+		console.log('_showMapping, field=', field);
 	}
 
 	async saveMapping() {}

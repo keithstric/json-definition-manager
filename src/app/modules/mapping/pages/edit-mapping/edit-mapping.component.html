@@ -52,11 +52,11 @@
 	<!-- Mapping container for creating the mapping -->
 	<div class="mapping-container flex-row justify-content-between">
 		<!-- Source Schema container -->
-		<div class="source-schema flex-column">
+		<div class="source-schema schema-container flex-column">
 			<ng-container [ngTemplateOutlet]="schemaContainer" [ngTemplateOutletContext]="{$implicit: 'source'}"></ng-container>
 		</div>
 		<!-- Target schema container -->
-		<div class="target-schema flex-column">
+		<div class="target-schema schema-container flex-column">
 			<ng-container [ngTemplateOutlet]="schemaContainer" [ngTemplateOutletContext]="{$implicit: 'target'}"></ng-container>
 		</div>
 		<!-- Mapping details container -->
@@ -65,10 +65,10 @@
 				<button class="btn btn-sm" title="Delete Mapping"><i class="fa-regular fa-trash-can"></i></button>
 			</div>
 			<div class="source-mapping flex-column">
-
+				<ng-container [ngTemplateOutlet]="mappingField" [ngTemplateOutletContext]="{$implicit: sourceFieldMappings, schemaType: 'source'}"></ng-container>
 			</div>
 			<div class="target-mapping flex-column">
-
+				<ng-container [ngTemplateOutlet]="mappingField" [ngTemplateOutletContext]="{$implicit: targetFieldMappings, schemaType: 'target'}"></ng-container>
 			</div>
 		</div>
 	</div>
@@ -96,12 +96,12 @@
 		</a>
 	</div>
 	<div *ngIf="sourceSchemaDoc" [class.source-json]="schemaType === 'source'" [class.target-json]="schemaType === 'target'">
-		<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: schemaType === 'source' ? sourceMappingFields : targetMappingFields}"></ng-container>
+		<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: schemaType === 'source' ? sourceMappingFields : targetMappingFields, schemaType: schemaType}"></ng-container>
 	</div>
 </ng-template>
 
 <!-- Template used for displaying the nested schema property list -->
-<ng-template #schemaPropertyList let-mappingFields>
+<ng-template #schemaPropertyList let-mappingFields let-schemaType="schemaType">
 	<ul class="list-group">
 		<li
 			*ngFor="let field of mappingFields"
@@ -109,26 +109,56 @@
 			[class.has-children]="field.children?.length"
 			class="list-group-item flex-column">
 			<div
-				class="flex-row mapping-field-title align-items-center"
+				class="mapping-field-title flex-row align-items-center"
 				(click)="_expandCollapse($event, field)">
 				<i *ngIf="field.children?.length"
 					 [class.fa-caret-right]="!expandedItems.includes(field.path)"
 					 [class.fa-caret-down]="expandedItems.includes(field.path)"
-					 class="fa-solid">
+					 class="fa-solid twistie">
 				</i>
 				<span>{{field.name}} ({{field.fieldType | uppercase}})</span>
+				<i *ngIf="!field.children?.length && field.mapped" class="fa-solid fa-dot-circle is-mapped"></i>
 				<span *ngIf="!field.children?.length" class="spacer"></span>
-				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Show Field Mapping">
+				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Show Field Mapping" (click)="_showMapping(field, schemaType)">
 					<i class="fa-solid fa-arrow-right-arrow-left"></i>
 				</button>
-				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Create Field Mapping">
+				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Create Field Mapping" (click)="_createMapping(field, schemaType)">
 					<i class="fa-solid fa-share-nodes"></i>
 				</button>
 			</div>
 			<div *ngIf="field.children?.length" class="list-group-item child-item collapse" [id]="field.path">
 				<!-- Pass along the children to the schemaPropertyList template as its mappingFields -->
-				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children}"></ng-container>
+				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children, schemaType: schemaType}"></ng-container>
 			</div>
 		</li>
 	</ul>
+</ng-template>
+
+<!-- Template used for the mapping panel's source and target field lists -->
+<ng-template #mappingField let-fields let-schemaType="schemaType">
+	<div *ngIf="fields?.length" class="card">
+		<div class="card-body">
+			<h4 class="card-title">{{schemaType | titlecase}}s</h4>
+			<ul class="list-group">
+				<li *ngFor="let field of fields; let idx = index" class="list-group-item flex-row align-items-center justify-content-between">
+					<span [title]="field.path">{{field.name}}</span>
+					<span class="spacer"></span>
+					<div class="mapping-field-actions">
+						<button class="btn btn-sm" title="Add Transformation">
+							<i class="fa-solid fa-bolt-lightning"></i>
+						</button>
+						<button class="btn btn-sm" title="Delete Field" (click)="_deleteFieldMapping(idx, schemaType)">
+							<i class="fa-regular fa-trash-can"></i>
+						</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="card-body">
+			<select class="form-select form-select-sm" (input)="_addFieldMapping($event, schemaType)">
+				<option [value]="undefined">Select a {{schemaType}} field to add to the mapping</option>
+				<option *ngFor="let field of (schemaType === 'source' ? sourceSchemaDoc.definition : targetSchemaDoc.definition)" [value]="field.path">{{field.path}}</option>
+			</select>
+		</div>
+	</div>
 </ng-template>

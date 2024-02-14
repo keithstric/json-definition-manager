@@ -1,4 +1,7 @@
 @import 'src/scss/variables';
+:host {
+	max-height: 100%;
+}
 
 .edit-mapping-container {
 	height: 100%;
@@ -29,7 +32,7 @@
 	}
 
 	.mapping-container {
-		height: 100%;
+		overflow: auto;
 
 		.schema-actions {
 			border-bottom: 1px solid #afafaf;
@@ -61,8 +64,11 @@
 				}
 
 				.mapping-field-title {
-					i {
+					.twistie {
 						margin-right: 5px;
+					}
+					.is-mapped {
+						margin-left: 5px;
 					}
 				}
 
@@ -77,14 +83,15 @@
 			}
 		}
 
-		.source-schema {
+		.schema-container {
+			overflow: auto;
 			border: 1px solid #afafaf;
 			flex-grow: 1;
 		}
 
+		.source-schema {}
+
 		.target-schema {
-			border: 1px solid #afafaf;
-			flex-grow: 1;
 			margin-left: 35px;
 		}
 
@@ -93,7 +100,9 @@
 			margin-left: 35px;
 			flex-basis: 250px;
 
-			.source-mapping {}
+			.source-mapping {
+				margin-bottom: 1rem;
+			}
 
 			.target-mapping {}
 		}
