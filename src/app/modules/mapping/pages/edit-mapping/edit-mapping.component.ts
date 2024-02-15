@@ -7,9 +7,9 @@ import _ from 'lodash';
 import {Subscription} from 'rxjs';
 
 @Component({
-  selector: 'app-edit-mapping',
-  templateUrl: './edit-mapping.component.html',
-  styleUrls: ['./edit-mapping.component.scss']
+	selector: 'app-edit-mapping',
+	templateUrl: './edit-mapping.component.html',
+	styleUrls: ['./edit-mapping.component.scss']
 })
 export class EditMappingComponent implements OnInit, OnDestroy {
 	mappingDoc: IMap;
@@ -60,14 +60,21 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	}
 
 	async fetchSchemas() {
-		this.schemas = await this.firestore.getAllDocuments<ISchema>('schemas');
+		if (!this.schemas?.length) {
+			const schemas = await this.firestore.getAllDocuments<ISchema>('schemas');
+			this.schemas = schemas.sort((a, b) => {
+				const aName = a.name.toLowerCase();
+				const bName = b.name.toLowerCase();
+				return a < b ? -1 : a > b ? 1 : 0;
+			});
+		}
 	}
 
 	_onSchemaSelect(evt: Event, type: 'source' | 'target') {
 		const evtTarget = evt.target as HTMLSelectElement;
 		const selectedId = evtTarget.value;
-		const compareId = type === 'source' ? this.targetSchemaId : this.sourceSchemaId
-		if (compareId && selectedId === compareId) {
+		const compareId = type === 'source' ? this.targetSchemaId : this.sourceSchemaId;
+		if (selectedId && compareId && selectedId === compareId) {
 			NotificationService.showConfirmDialog({
 				modalHeaderText: 'Schema and Target must be different',
 				confirmButtonLabel: 'OK',
@@ -84,15 +91,29 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			return;
 		}
 		const schemaDoc = this.schemas.find(schema => schema.id === selectedId);
-		const mappingFields = this._buildFields(schemaDoc.definition);
-		if (type === 'source') {
-			this.sourceSchemaDoc = schemaDoc;
-			this.sourceSchema = schemaDoc.schema;
-			this.sourceMappingFields = mappingFields;
-		}else{
-			this.targetSchemaDoc = schemaDoc;
-			this.targetSchema = schemaDoc.schema;
-			this.targetMappingFields = mappingFields;
+		if (schemaDoc) {
+			const mappingFields = this._buildFields(schemaDoc.definition);
+			if (type === 'source') {
+				this.sourceSchemaDoc = schemaDoc;
+				this.sourceSchemaDoc.definition = this.sourceSchemaDoc.definition.sort((a, b) => {
+					const aPath = a.path;
+					const bPath = b.path;
+					return a > b ? 1 : a < b ? -1 : 0;
+				});
+				this.sourceSchema = schemaDoc.schema;
+				this.sourceMappingFields = mappingFields;
+			} else {
+				this.targetSchemaDoc = schemaDoc;
+				this.targetSchemaDoc.definition = this.targetSchemaDoc.definition.sort((a, b) => {
+					const aPath = a.path;
+					const bPath = b.path;
+					return a > b ? 1 : a < b ? -1 : 0;
+				});
+				this.targetSchema = schemaDoc.schema;
+				this.targetMappingFields = mappingFields;
+			}
+		} else {
+			// type === 'source' ? this.sourceSchemaDoc = undefined : this.targetSchemaDoc = undefined;
 		}
 	}
 
