@@ -36,5 +36,6 @@ export interface IFieldMappingProperty {
 	fieldType: string;
 	mapped?: boolean;
 	id?: string;
+	expanded?: boolean;
 	children?: IFieldMappingProperty[];
 }

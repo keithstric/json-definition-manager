@@ -2,7 +2,9 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {FirestoreService} from '@core/services/firestore/firestore.service';
 import {NotificationService} from '@core/services/notification/notification.service';
+import {LeaderLineItem} from '@modules/mapping/interfaces/leader-line.interface';
 import {IFieldMappingProperty, IMap, IPropertyDefinition, ISchema} from '@shared/interfaces/map.interface';
+import LeaderLine from 'leader-line-new';
 import _ from 'lodash';
 import {Subscription} from 'rxjs';
 
@@ -17,12 +19,12 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	mappingName: string;
 	mappingDesc: string;
 	schemas: ISchema[] = [];
-	sourceSchemaId: string;
+	sourceSchemaId: string = undefined;
 	sourceSchemaDoc: ISchema;
 	sourceSchema: any;
 	sourceMappingFields: IFieldMappingProperty[] = [];
 	sourceFieldMappings: IFieldMappingProperty[] = [];
-	targetSchemaId: string;
+	targetSchemaId: string = undefined;
 	targetSchemaDoc: ISchema;
 	targetSchema: any;
 	targetMappingFields: IFieldMappingProperty[] = [];
@@ -31,7 +33,7 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	targetDefinition: IPropertyDefinition[];
 	routeSub: Subscription;
 	docId: string;
-	expandedItems: string[] = [];
+	leaderLines: LeaderLineItem[] = [];
 
 	constructor(
 		private firestore: FirestoreService,
@@ -62,17 +64,37 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	async fetchSchemas() {
 		if (!this.schemas?.length) {
 			const schemas = await this.firestore.getAllDocuments<ISchema>('schemas');
-			this.schemas = schemas.sort((a, b) => {
-				const aName = a.name.toLowerCase();
-				const bName = b.name.toLowerCase();
-				return a < b ? -1 : a > b ? 1 : 0;
-			});
+			if (schemas?.length) {
+				const sortedSchemas = schemas.sort((a, b) => {
+					const aName = a.name.toLowerCase();
+					const bName = b.name.toLowerCase();
+					return aName < bName ? -1 : aName > bName ? 1 : 0;
+				});
+				this.schemas = sortedSchemas;
+			}
 		}
 	}
 
+	/**
+	 * Called from the dropdown at the top of the respective schema panel. Sets the displayed schema
+	 * @param evt
+	 * @param type
+	 */
 	_onSchemaSelect(evt: Event, type: 'source' | 'target') {
 		const evtTarget = evt.target as HTMLSelectElement;
-		const selectedId = evtTarget.value;
+		const selectedId = evtTarget.value === 'undefined' || evtTarget.value === 'null' ? undefined : evtTarget.value;
+		if (!selectedId) {
+			if (type === 'source') {
+				this.sourceSchemaDoc = undefined;
+				this.sourceSchema = undefined;
+				this.sourceMappingFields = [];
+			}else if (type === 'target') {
+				this.targetSchemaDoc = undefined;
+				this.targetSchema = undefined;
+				this.targetMappingFields = [];
+			}
+			return;
+		}
 		const compareId = type === 'source' ? this.targetSchemaId : this.sourceSchemaId;
 		if (selectedId && compareId && selectedId === compareId) {
 			NotificationService.showConfirmDialog({
@@ -98,7 +120,7 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 				this.sourceSchemaDoc.definition = this.sourceSchemaDoc.definition.sort((a, b) => {
 					const aPath = a.path;
 					const bPath = b.path;
-					return a > b ? 1 : a < b ? -1 : 0;
+					return aPath > bPath ? 1 : aPath < bPath ? -1 : 0;
 				});
 				this.sourceSchema = schemaDoc.schema;
 				this.sourceMappingFields = mappingFields;
@@ -107,13 +129,11 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 				this.targetSchemaDoc.definition = this.targetSchemaDoc.definition.sort((a, b) => {
 					const aPath = a.path;
 					const bPath = b.path;
-					return a > b ? 1 : a < b ? -1 : 0;
+					return aPath > bPath ? 1 : aPath < bPath ? -1 : 0;
 				});
 				this.targetSchema = schemaDoc.schema;
 				this.targetMappingFields = mappingFields;
 			}
-		} else {
-			// type === 'source' ? this.sourceSchemaDoc = undefined : this.targetSchemaDoc = undefined;
 		}
 	}
 
@@ -127,6 +147,8 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			const pathArr = property.path.split('.');
 			const currentPathLength = pathArr.length;
 			const fieldType = property.type;
+			const expanded = false;
+			const id = `${path}-${fieldType}`;
 			const name = property.path.split('.').pop();
 			const descendantDefs = definition.filter(item => item.path.startsWith(`${path}.`));
 			let children = descendantDefs?.length ? this._buildFields(descendantDefs, path) : undefined;
@@ -136,6 +158,8 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 					path,
 					name,
 					fieldType,
+					expanded,
+					id,
 					children
 				});
 			}
@@ -143,33 +167,45 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		return mappingFields;
 	}
 
+	/**
+	 * Called from the list item that has children. Expands/Collapses the clicked property
+	 * @param evt
+	 * @param field
+	 */
 	_expandCollapse(evt: Event, field: IFieldMappingProperty) {
 		evt.stopPropagation();
 		if (field.children) {
-			const fieldPath = field.path;
-			const el = document.getElementById(fieldPath);
-			if (el.classList.contains('collapse')) {
-				el.classList.remove('collapse');
-				this.expandedItems.push(fieldPath);
-			} else {
-				const idx = this.expandedItems.indexOf(fieldPath);
-				if (idx > -1) {
-					this.expandedItems.splice(idx, 1);
-				}
-				el.classList.add('collapse');
+			field.expanded = !field.expanded;
+			if (this.leaderLines?.length) {
+				this.leaderLines.forEach(line => {
+					line.line.position();
+				});
 			}
 		}
 	}
 
-	_createMapping(field: IFieldMappingProperty, schemaType: 'source' | 'target') {
+	/**
+	 * Called from the button next to the field in the respective schema panel
+	 * @param field
+	 * @param schemaType
+	 */
+	_createFieldMapping(field: IFieldMappingProperty, schemaType: 'source' | 'target') {
 		field.mapped = true;
 		field.id = `${field.path}-${field.fieldType}`;
 		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : schemaType === 'target' ? this.targetFieldMappings : undefined;
 		if (fieldMappings) {
 			fieldMappings.push(field);
 		}
+		if (this.sourceFieldMappings?.length && this.targetFieldMappings?.length) {
+			this._setLeaderLine(this.sourceFieldMappings[0], this.targetFieldMappings[0]);
+		}
 	}
 
+	/**
+	 * Called from the dropdown in the field mapping panel of the respective type (source or target)
+	 * @param evt
+	 * @param schemaType
+	 */
 	_addFieldMapping(evt: Event, schemaType: 'source' | 'target') {
 		const el: HTMLSelectElement = evt.target as HTMLSelectElement;
 		const selectedValue = el.value;
@@ -181,8 +217,23 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			mappingField.id = `${mappingField.path}-${mappingField.fieldType}`;
 			fieldMappings.push(mappingField);
 		}
+		if (this.leaderLines?.length) {
+			const idFieldName = schemaType === 'source' ? 'targetId' : 'sourceId';
+			const otherFieldMappings = schemaType === 'source' ? this.targetFieldMappings : this.sourceFieldMappings;
+			const leaderLine = this.leaderLines.find(leaderLine => leaderLine[idFieldName] === otherFieldMappings[0].id);
+			if (schemaType === 'source') {
+				this._setLeaderLine(mappingField, leaderLine.targetField);
+			}else{
+				this._setLeaderLine(leaderLine.sourceField, mappingField);
+			}
+		}
 	}
 
+	/**
+	 * Called from the delete button next to the field in the mapping panel
+	 * @param idx
+	 * @param schemaType
+	 */
 	_deleteFieldMapping(idx: number, schemaType: 'source' | 'target') {
 		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : this.targetFieldMappings;
 		const fieldMapping = fieldMappings[idx];
@@ -190,6 +241,31 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		const mappingField = this._findMappingField(mappingFields, fieldMapping.path);
 		mappingField.mapped = false;
 		fieldMappings.splice(idx, 1);
+		const leaderLineLookupId = schemaType === 'source' ? 'sourceId' : 'targetId';
+		this.leaderLines.forEach((leaderLineItem, idx) => {
+			if (leaderLineItem[leaderLineLookupId] === fieldMapping.id) {
+				leaderLineItem.line.remove();
+				this.leaderLines.splice(idx, 1);
+			}
+		});
+	}
+
+	_setLeaderLine(sourceField: IFieldMappingProperty, targetField: IFieldMappingProperty) {
+		const sourceId = sourceField.id;
+		const targetId = targetField.id;
+		const sourceEl = document.getElementById(sourceId);
+		const targetEl = document.getElementById(targetId);
+		const leaderLineItem: LeaderLineItem = {
+			sourceId,
+			sourceEl,
+			sourceField,
+			targetId,
+			targetEl,
+			targetField,
+			line: new LeaderLine(sourceEl, targetEl, {size: 2})
+		};
+		this.leaderLines.push(leaderLineItem);
+		return leaderLineItem;
 	}
 
 	private _findMappingField(mappingFields: IFieldMappingProperty[], path: string) {

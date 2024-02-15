@@ -95,8 +95,14 @@
 			</button>
 		</a>
 	</div>
-	<div *ngIf="sourceSchemaDoc" [class.source-json]="schemaType === 'source'" [class.target-json]="schemaType === 'target'">
-		<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: schemaType === 'source' ? sourceMappingFields : targetMappingFields, schemaType: schemaType}"></ng-container>
+	<div *ngIf="schemaType === 'source' ? sourceSchemaDoc : targetSchemaDoc" [class.source-json]="schemaType === 'source'" [class.target-json]="schemaType === 'target'">
+		<ng-container
+			[ngTemplateOutlet]="schemaPropertyList"
+			[ngTemplateOutletContext]="{
+				$implicit: schemaType === 'source' ? sourceMappingFields : targetMappingFields,
+				schemaType: schemaType
+			}">
+		</ng-container>
 	</div>
 </ng-template>
 
@@ -112,8 +118,8 @@
 				class="mapping-field-title flex-row align-items-center"
 				(click)="_expandCollapse($event, field)">
 				<i *ngIf="field.children?.length"
-					 [class.fa-caret-right]="!expandedItems.includes(field.path)"
-					 [class.fa-caret-down]="expandedItems.includes(field.path)"
+					 [class.fa-caret-right]="field.expanded === false"
+					 [class.fa-caret-down]="field.expanded === true"
 					 class="fa-solid twistie">
 				</i>
 				<span>{{field.name}} ({{field.fieldType | uppercase}})</span>
@@ -122,11 +128,15 @@
 				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Show Field Mapping" (click)="_showMapping(field, schemaType)">
 					<i class="fa-solid fa-arrow-right-arrow-left"></i>
 				</button>
-				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Create Field Mapping" (click)="_createMapping(field, schemaType)">
+				<button *ngIf="!field.children?.length" class="btn btn-sm" title="Create Field Mapping" (click)="_createFieldMapping(field, schemaType)">
 					<i class="fa-solid fa-share-nodes"></i>
 				</button>
 			</div>
-			<div *ngIf="field.children?.length" class="list-group-item child-item collapse" [id]="field.path">
+			<div
+				*ngIf="field.children?.length"
+				class="list-group-item child-item"
+				[class.collapse]="field.expanded === false"
+				[id]="field.path">
 				<!-- Pass along the children to the schemaPropertyList template as its mappingFields -->
 				<ng-container [ngTemplateOutlet]="schemaPropertyList" [ngTemplateOutletContext]="{$implicit: field.children, schemaType: schemaType}"></ng-container>
 			</div>
