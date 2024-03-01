@@ -65,12 +65,11 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		if (!this.schemas?.length) {
 			const schemas = await this.firestore.getAllDocuments<ISchema>('schemas');
 			if (schemas?.length) {
-				const sortedSchemas = schemas.sort((a, b) => {
+				this.schemas = schemas.sort((a, b) => {
 					const aName = a.name.toLowerCase();
 					const bName = b.name.toLowerCase();
 					return aName < bName ? -1 : aName > bName ? 1 : 0;
 				});
-				this.schemas = sortedSchemas;
 			}
 		}
 	}
@@ -102,8 +101,8 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 				confirmButtonLabel: 'OK',
 				hideCancelButton: true,
 				modalTextContent: 'Please select two different schemas.',
-				confirmHandler(data?: any) {
-					evtTarget.value = undefined;
+				confirmHandler: (data?: any) => {
+					type === 'source' ? this.sourceSchemaId = undefined : this.targetSchemaId = undefined;
 				},
 				ngModalOptions: {
 					ignoreBackdropClick: true,
@@ -145,7 +144,6 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			const property = rootItems[i];
 			const path = property.path;
 			const pathArr = property.path.split('.');
-			const currentPathLength = pathArr.length;
 			const fieldType = property.type;
 			const expanded = false;
 			const id = `${path}-${fieldType}`;
@@ -172,13 +170,25 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	 * @param evt
 	 * @param field
 	 */
-	_expandCollapse(evt: Event, field: IFieldMappingProperty) {
+	_expandCollapse(evt: Event, field: IFieldMappingProperty, type: 'source' | 'target') {
 		evt.stopPropagation();
 		if (field.children) {
 			field.expanded = !field.expanded;
 			if (this.leaderLines?.length) {
-				this.leaderLines.forEach(line => {
-					line.line.position();
+				this.leaderLines.forEach((line, idx) => {
+					const lineFld = type === 'source' ? line.sourceField : line.targetField;
+					if (lineFld.path.includes(field.path)) {
+						if (!field.expanded) {
+							console.log('_expandCollapse, field=', field);
+							console.log('_expandCollapse, line=', line);
+							line.line.remove();
+							const sourceField = type === 'source' ? field : line.sourceField;
+							const targetField = type === 'target' ? field : line.targetField;
+							const lineEl = this._setLeaderLine(sourceField, targetField);
+							this.leaderLines.splice(idx, 1);
+							this.leaderLines.push(lineEl);
+						}
+					}
 				});
 			}
 		}
@@ -190,14 +200,35 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	 * @param schemaType
 	 */
 	_createFieldMapping(field: IFieldMappingProperty, schemaType: 'source' | 'target') {
-		field.mapped = true;
-		field.id = `${field.path}-${field.fieldType}`;
-		const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : schemaType === 'target' ? this.targetFieldMappings : undefined;
-		if (fieldMappings) {
-			fieldMappings.push(field);
-		}
-		if (this.sourceFieldMappings?.length && this.targetFieldMappings?.length) {
-			this._setLeaderLine(this.sourceFieldMappings[0], this.targetFieldMappings[0]);
+		const mappingArr = schemaType === 'source' ? this.sourceFieldMappings : this.targetFieldMappings;
+		if (mappingArr?.length) {
+			NotificationService.showConfirmDialog({
+				modalHeaderText: 'Mapping in progress',
+				modalTextContent: `A mapping is currently being configured. Use the drop down in the mapping to add ${schemaType} fields.`,
+				hideCancelButton: true,
+				confirmButtonLabel: 'OK'
+			});
+		}else {
+			const fieldInMapping = !!mappingArr.find(mapping => mapping.id === field.id);
+			if (fieldInMapping) {
+				NotificationService.showConfirmDialog({
+					modalHeaderText: 'Field in mapping already',
+					modalTextContent: `The ${field.name} field is already in the mapping. You can't add it again.`,
+					hideCancelButton: true,
+					confirmButtonLabel: 'OK'
+				});
+			}else{
+				field.mapped = true;
+				field.id = `${field.path}-${field.fieldType}`;
+				const fieldMappings = schemaType === 'source' ? this.sourceFieldMappings : schemaType === 'target' ? this.targetFieldMappings : undefined;
+				if (fieldMappings) {
+					fieldMappings.push(field);
+				}
+				if (this.sourceFieldMappings?.length && this.targetFieldMappings?.length) {
+					const line = this._setLeaderLine(this.sourceFieldMappings[0], this.targetFieldMappings[0]);
+					this.leaderLines.push(line);
+				}
+			}
 		}
 	}
 
@@ -221,12 +252,15 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			const idFieldName = schemaType === 'source' ? 'targetId' : 'sourceId';
 			const otherFieldMappings = schemaType === 'source' ? this.targetFieldMappings : this.sourceFieldMappings;
 			const leaderLine = this.leaderLines.find(leaderLine => leaderLine[idFieldName] === otherFieldMappings[0].id);
+			let line;
 			if (schemaType === 'source') {
-				this._setLeaderLine(mappingField, leaderLine.targetField);
+				line = this._setLeaderLine(mappingField, leaderLine.targetField);
 			}else{
-				this._setLeaderLine(leaderLine.sourceField, mappingField);
+				line = this._setLeaderLine(leaderLine.sourceField, mappingField);
 			}
+			this.leaderLines.push(line);
 		}
+		el.value = undefined;
 	}
 
 	/**
@@ -250,6 +284,21 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	_confirmMapping() {
+
+	}
+
+	_deleteMapping() {
+		const startSourceLen = this.sourceFieldMappings.length;
+		for (let i = 0; i < startSourceLen; i++) {
+			this._deleteFieldMapping(this.sourceFieldMappings.length - 1, 'source');
+		}
+		const startTargetLen = this.targetFieldMappings.length;
+		for (let i = 0; i < startTargetLen; i++) {
+			this._deleteFieldMapping(this.targetFieldMappings.length - 1, 'target');
+		}
+	}
+
 	_setLeaderLine(sourceField: IFieldMappingProperty, targetField: IFieldMappingProperty) {
 		const sourceId = sourceField.id;
 		const targetId = targetField.id;
@@ -264,8 +313,14 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			targetField,
 			line: new LeaderLine(sourceEl, targetEl, {size: 2})
 		};
-		this.leaderLines.push(leaderLineItem);
 		return leaderLineItem;
+	}
+
+	_definitionHasKids(definitionField: IPropertyDefinition, type: 'source' | 'target') {
+		const {path} = definitionField;
+		const mappingFields = type === 'source' ? this.sourceMappingFields : this.targetMappingFields;
+		const mappingField = this._findMappingField(mappingFields, path);
+		return mappingField?.children?.length;
 	}
 
 	private _findMappingField(mappingFields: IFieldMappingProperty[], path: string) {
@@ -284,7 +339,7 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 			let pathIdx = 1;
 			while (pathIdx < pathArr.length) {
 				nextPath = `${nextPath}.${pathArr[pathIdx]}`
-				currentMappingField = currentMappingField.children.find((item, childIdx) => {
+				currentMappingField = currentMappingField?.children.find((item, childIdx) => {
 					if (item.path === nextPath) {
 						if (pathIdx < pathArr.length - 1) {
 							fieldPath = `${fieldPath}.${childIdx}.children`;

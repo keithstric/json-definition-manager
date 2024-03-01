@@ -48,7 +48,6 @@
 			<small id="mappingDescHelp" class="form-text text-muted">Define a description for this mapping.</small>
 		</div>
 	</div>
-
 	<!-- Mapping container for creating the mapping -->
 	<div class="mapping-container flex-row justify-content-between">
 		<!-- Source Schema container -->
@@ -62,7 +61,8 @@
 		<!-- Mapping details container -->
 		<div class="mapping flex-column">
 			<div class="schema-actions flex-row justify-content-end align-items-center">
-				<button class="btn btn-sm" title="Delete Mapping"><i class="fa-regular fa-trash-can"></i></button>
+				<button class="btn btn-sm confirm-button" title="Confirm Mapping" (click)="_confirmMapping()"><i class="fa-solid fa-circle-check"></i></button>
+				<button class="btn btn-sm" title="Delete Mapping" (click)="_deleteMapping()"><i class="fa-regular fa-trash-can"></i></button>
 			</div>
 			<div class="source-mapping flex-column">
 				<ng-container [ngTemplateOutlet]="mappingField" [ngTemplateOutletContext]="{$implicit: sourceFieldMappings, schemaType: 'source'}"></ng-container>
@@ -74,7 +74,7 @@
 	</div>
 </div>
 
-<!-- Template for the source and target schemas -->
+<!-- #schemaContainer Template for the source and target schemas -->
 <ng-template #schemaContainer let-schemaType>
 	<div class="schema-actions flex-row">
 		<select
@@ -83,7 +83,9 @@
 			class="form-select form-select-sm"
 			(input)="_onSchemaSelect($event, schemaType)">
 			<option [value]="undefined">Select a {{schemaType | titlecase}} Schema</option>
-			<option *ngFor="let schema of schemas" [value]="schema.id">{{schema.name}}</option>
+			<option	*ngFor="let schema of schemas" [value]="schema.id">
+				<span [class.text-decoration-line-through]="schemaType === 'source' ? schema.id === targetSchemaId : schema.id === sourceSchemaId">{{schema.name}}</span>
+			</option>
 		</select>
 		<a
 			[routerLink]="['/schemas', schemaType === 'source' ? sourceSchemaId : targetSchemaId]"
@@ -106,7 +108,7 @@
 	</div>
 </ng-template>
 
-<!-- Template used for displaying the nested schema property list -->
+<!-- #schemaPropertyList Template used for displaying the nested schema property list -->
 <ng-template #schemaPropertyList let-mappingFields let-schemaType="schemaType">
 	<ul class="list-group">
 		<li
@@ -116,7 +118,7 @@
 			class="list-group-item flex-column">
 			<div
 				class="mapping-field-title flex-row align-items-center"
-				(click)="_expandCollapse($event, field)">
+				(click)="_expandCollapse($event, field, schemaType)">
 				<i *ngIf="field.children?.length"
 					 [class.fa-caret-right]="field.expanded === false"
 					 [class.fa-caret-down]="field.expanded === true"
@@ -144,7 +146,7 @@
 	</ul>
 </ng-template>
 
-<!-- Template used for the mapping panel's source and target field lists -->
+<!-- #mappingField Template used for the mapping panel's source and target field lists -->
 <ng-template #mappingField let-fields let-schemaType="schemaType">
 	<div *ngIf="fields?.length" class="card">
 		<div class="card-body">
@@ -167,7 +169,11 @@
 		<div class="card-body">
 			<select class="form-select form-select-sm" (input)="_addFieldMapping($event, schemaType)">
 				<option [value]="undefined">Select a {{schemaType}} field to add to the mapping</option>
-				<option *ngFor="let field of (schemaType === 'source' ? sourceSchemaDoc.definition : targetSchemaDoc.definition)" [value]="field.path">{{field.path}}</option>
+				<ng-container *ngFor="let field of (schemaType === 'source' ? sourceSchemaDoc.definition : targetSchemaDoc.definition)">
+					<option *ngIf="!_definitionHasKids(field, schemaType)"  [value]="field.path">
+						{{field.path}}
+					</option>
+				</ng-container>
 			</select>
 		</div>
 	</div>
