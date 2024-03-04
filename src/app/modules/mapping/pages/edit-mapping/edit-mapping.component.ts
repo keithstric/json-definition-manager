@@ -284,10 +284,16 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	/**
+	 * Confirm and create the mapping
+	 */
 	_confirmMapping() {
 
 	}
 
+	/**
+	 * Clear all the mapping fields
+	 */
 	_deleteMapping() {
 		const startSourceLen = this.sourceFieldMappings.length;
 		for (let i = 0; i < startSourceLen; i++) {
@@ -366,12 +372,4 @@ export class EditMappingComponent implements OnInit, OnDestroy {
 	async saveMapping() {}
 
 	revertChanges() {}
-
-	updateCurrentMapping() {}
-
-	createPropertyMapping(sourceProperty: string, targetProperty: string) {}
-
-	deletePropertyMapping(propertyMappingId: string) {}
-
-	updatePropertyMapping(sourceProperty: string, targetProperty: string) {}
 }
